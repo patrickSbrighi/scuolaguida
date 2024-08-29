@@ -31,7 +31,6 @@ win.geometry('930x478')
 win.resizable(True,True)
 win.title('Manage Students')
 
-
 leftFrame = CTkFrame(win)
 leftFrame.grid(row = 0, column = 0, sticky="ns")
 
