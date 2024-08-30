@@ -43,52 +43,52 @@ CFLable.grid(row=0, column=0, padx=20, pady=10)
 CFEntry = CTkEntry(leftFrame)
 CFEntry.grid(row=0, column=1, pady=10)
 
-nameLable = CTkLabel(leftFrame, text="name", font=('arial', 15, 'bold'))
+nameLable = CTkLabel(leftFrame, text="Name", font=('arial', 15, 'bold'))
 nameLable.grid(row=1, column=0, padx=20, pady=10)
 nameEntry = CTkEntry(leftFrame)
 nameEntry.grid(row=1, column=1, pady=10)
 
-surnameLable = CTkLabel(leftFrame, text="surname", font=('arial', 15, 'bold'))
+surnameLable = CTkLabel(leftFrame, text="Cognome", font=('arial', 15, 'bold'))
 surnameLable.grid(row=2, column=0, padx=20, pady=10)
 surnameEntry = CTkEntry(leftFrame)
 surnameEntry.grid(row=2, column=1, pady=10)
 
-addressLable = CTkLabel(leftFrame, text="address", font=('arial', 15, 'bold'))
+addressLable = CTkLabel(leftFrame, text="Indirizzo", font=('arial', 15, 'bold'))
 addressLable.grid(row=3, column=0, padx=20, pady=10)
 addressEntry = CTkEntry(leftFrame)
 addressEntry.grid(row=3, column=1, pady=10)
 
-phoneLable = CTkLabel(leftFrame, text="telephone number", font=('arial', 15, 'bold'))
+phoneLable = CTkLabel(leftFrame, text="Recapito Telefonico", font=('arial', 15, 'bold'))
 phoneLable.grid(row=4, column=0, padx=20, pady=10)
 phoneEntry = CTkEntry(leftFrame)
 phoneEntry.grid(row=4, column=1, pady=10)
 
-dateLable = CTkLabel(leftFrame, text="date of born", font=('arial', 15, 'bold'))
+dateLable = CTkLabel(leftFrame, text="Data di Nascita", font=('arial', 15, 'bold'))
 dateLable.grid(row=5, column=0, padx=20, pady=10)
 dateEntry = CTkEntry(leftFrame)
 dateEntry.grid(row=5, column=1, pady=10)
 
 
-addbtn = CTkButton(leftFrame, text='Add Student', cursor='hand2', command=add)
+addbtn = CTkButton(leftFrame, text='Aggiungi', cursor='hand2', command=add)
 addbtn.grid(row=6, column=0, padx=10, pady=10)
 
 
-tree = ttk.Treeview(rightData, columns=('CF', 'name', 'surname', 'address', 'telephone number', 'date of born'), show='headings')
+tree = ttk.Treeview(rightData, columns=('CF', 'Nome', 'Cognome', 'Indirizzo', 'Recapito Telefonico', 'Data di Nascita'), show='headings')
 
 tree.heading('CF', text='CF', anchor='center')
-tree.heading('name', text='Name', anchor='center')
-tree.heading('surname', text='Surname', anchor='center')
-tree.heading('address', text='Address', anchor='center')
-tree.heading('telephone number', text='Telephone', anchor='center')
-tree.heading('date of born', text='Date of Born', anchor='center')
+tree.heading('Nome', text='None', anchor='center')
+tree.heading('Cognome', text='Cognome', anchor='center')
+tree.heading('Indirizzo', text='Indirizzo', anchor='center')
+tree.heading('Recapito Telefonico', text='Recapito Telefonico', anchor='center')
+tree.heading('Data di Nascita', text='Data di Nascita', anchor='center')
 
 
 tree.column('CF', stretch=True, width=100,anchor="w")
-tree.column('name', stretch=True, width=100, anchor="w")
-tree.column('surname', stretch=True, width=100, anchor="w")
-tree.column('address', stretch=True, width=100, anchor="w")
-tree.column('telephone number', stretch=True, width=100, anchor="w")
-tree.column('date of born', stretch=True, width=100, anchor="w")
+tree.column('Nome', stretch=True, width=100, anchor="w")
+tree.column('Cognome', stretch=True, width=100, anchor="w")
+tree.column('Indirizzo', stretch=True, width=100, anchor="w")
+tree.column('Recapito Telefonico', stretch=True, width=100, anchor="w")
+tree.column('Data di Nascita', stretch=True, width=100, anchor="w")
 
 tree.pack(fill="both", expand=True)
 

@@ -50,3 +50,62 @@ def show_Person():
     mycursor.execute(sql)
     data = mycursor.fetchall()
     return data
+
+def show_Student():
+    sql="SELECT CFStudente, nome, cognome FROM studenti"
+    mycursor.execute(sql)
+    data = mycursor.fetchall()
+    return data
+
+def show_Patenti():
+    sql="SELECT nome FROM tipologiepatenti"
+    mycursor.execute(sql)
+    data = mycursor.fetchall()
+    return data
+
+def show_Pratici():
+    sql="SELECT CFIstruttorePratico, nome, cognome FROM istruttoripratici"
+    mycursor.execute(sql)
+    data = mycursor.fetchall()
+    return data
+
+def show_Teorici():
+    sql="SELECT CFIstruttoreTeorico, nome, cognome FROM istruttoriteorici"
+    mycursor.execute(sql)
+    data = mycursor.fetchall()
+    return data
+
+def add_iscrizione(CFStudente, CFTeorico, CFPratico, data, tipo):
+    mycursor.execute("select idTipologia from tipologiepatenti where nome=%s", (tipo,))
+    idTipologia = mycursor.fetchone()[0]
+
+    # Inserisci un nuovo record in 'iscrizioni'
+    mycursor.execute(
+        "INSERT INTO scuolaguida.iscrizioni (dataInizio, CFStudente, idTipologia, costo, chiusa, CFIstruttoreTeorico, CFIstruttorePratico) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+        (data, CFStudente, idTipologia, '500', 'N', CFTeorico, CFPratico)
+    )
+
+    # Recupera l'idStudente
+    mycursor.execute("SELECT idStudente FROM scuolaguida.iscrizioni WHERE CFStudente = %s", (CFStudente,))
+    idStudente = mycursor.fetchone()[0]  # Recupera il primo elemento della tupla
+
+    # Inserisci un nuovo record in 'acquisti'
+    mycursor.execute(
+        "INSERT INTO scuolaguida.acquisti (costoTotale, idStudente) VALUES (%s, %s)", 
+        ('500', idStudente)
+    )
+
+    # Recupera l'idAcquisto
+    mycursor.execute("SELECT LAST_INSERT_ID()")
+    idAcquisto = mycursor.fetchone()[0]  # Recupera l'id dell'ultimo inserimento
+
+    # Inserisci un nuovo record in 'fatture'
+    mycursor.execute(
+        "INSERT INTO scuolaguida.fatture (importoLordo, IVA, importoNetto, idAcquisto) VALUES (%s, %s, %s, %s)",
+        ('610', '22', '500', idAcquisto)
+    )
+
+    # Applica le modifiche
+    mydb.commit()
+
+
