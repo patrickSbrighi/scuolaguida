@@ -8,12 +8,11 @@ def clearTreeview():
 
 def updateView():
     clearTreeview()
-    for tip in get_tipologie():
-        list.insert('',END,values=tip)
+    for stud in get_studenti_teorici():
+        list.insert('',END,values=stud)
 
-def addTipologia():
-    add_tipologia(boxNome.get(), boxEta.get())
-    updateView()
+def addEsito():
+    print("implementami")
 
 window=Tk()
 window.title('Veicoli')
@@ -50,31 +49,38 @@ statisticheButton.pack(fill=X)
 impostazioniButton = Button(leftFrame, text='Impostazioni', font=('Arial', 15))
 impostazioniButton.pack(fill=X)
 
-addFrame = Frame(window, bg="lightgray")
-addFrame.place(x=250, y=75, width=200, height=175)
+studentiFrame = Frame(window)
+studentiFrame.place(x=500, y=75, width=400, height=375)
 
-lblNome = Label(addFrame, text="Inserisci la tipologia", font=('times new roman', 15), bg='lightgray')
-lblNome.place(x=18,y=2)
-boxNome = Entry(addFrame, font=('times new roman', 12), bg="lightyellow")
-boxNome.grid(row=0,column=1, padx=18, pady=30)
-
-lblEta = Label(addFrame, text="Inserisci l'età", font=('times new roman', 15), bg='lightgray')
-lblEta.place(x=18,y=55)
-boxEta = Entry(addFrame, font=('times new roman', 12), bg="lightyellow")
-boxEta.grid(row=1,column=1, padx=18)
-
-btnInvia = Button(addFrame, text="Invio", font=('Arial', 15), command=lambda: addTipologia())
-btnInvia.place(x=50, y=120, width=100)
-
-viewFrame = Frame(window)
-viewFrame.place(x=500, y=75, width=402, height=300)
-
-list = ttk.Treeview(viewFrame, columns=('Nome', 'Età'), show="headings")
+list = ttk.Treeview(studentiFrame, columns=('ID', 'Nome', 'Cognome'), show="headings")
 list.pack(expand=True, fill='both')
-list.column('Nome', width=130, anchor='center')
-list.column('Età', width=130, anchor='center')
+list.column('ID', width=100, anchor='center')
+list.column('Nome', width=100, anchor='center')
+list.column('Cognome', width=100, anchor='center')
+list.heading('ID', text='ID')
 list.heading('Nome', text='Nome')
-list.heading('Età', text='Età')
+list.heading('Cognome', text='Cognome')
+
+addFrame = Frame(window, bg="lightgray")
+addFrame.place(x=250, y=75, width=200, height=250)
+
+lblID = Label(addFrame, text="Seleziona uno studente", font=('times new roman', 15), bg='lightgray')
+lblID.place(x=8,y=2)
+boxID = Entry(addFrame, font=('times new roman', 12), bg="lightyellow")
+boxID.grid(row=0,column=1, padx=8, pady=25)
+
+lblNumErrori = Label(addFrame, text="Numero errori:", font=('times new roman', 15), bg='lightgray')
+lblNumErrori.place(x=8,y=50)
+boxErrori = Entry(addFrame, font=('times new roman', 12), bg="lightyellow")
+boxErrori.grid(row=1,column=1, padx=8)
+
+lblData = Label(addFrame, text="Data (aaaa/mm/dd):", font=('times new roman', 15), bg='lightgray')
+lblData.place(x=8,y=100)
+boxData = Entry(addFrame, font=('times new roman', 12), bg="lightyellow")
+boxData.grid(row=2,column=1, padx=8, pady=30)
+
+btnInvia = Button(addFrame, text="Invio", font=('Arial', 15), command=lambda:addEsito())
+btnInvia.place(x=50, y=175, width=100)
 
 updateView()
 

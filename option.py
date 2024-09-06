@@ -1,7 +1,7 @@
 from tkinter import *
 
 window=Tk()
-window.title('Option')
+window.title('Veicoli')
 window.geometry('930x478')
 window.resizable(True, True)
 
@@ -14,27 +14,26 @@ logoutButton.place(x=850, y=13)
 leftFrame = Frame(window, bg='lightgray')
 leftFrame.place(x=0, y=52, width=200, relheight=1)
 
-studentsButton = Button(leftFrame, text='Iscrizioni', font=('Arial', 15))
-studentsButton.pack(fill=X)
+iscrizioneButton = Button(leftFrame, text='Iscrizioni', font=('Arial', 15))
+iscrizioneButton.pack(fill=X)
 
-istruttoreButton = Button(leftFrame, text='Acquisti', font=('Arial', 15))
-istruttoreButton.pack(fill=X)
+acquistiButton = Button(leftFrame, text='Acquisti', font=('Arial', 15))
+acquistiButton.pack(fill=X)
 
-SalesButton = Button(leftFrame, text='Prenotazione', font=('Arial', 15))
-SalesButton.pack(fill=X)
+prenotazioneButton = Button(leftFrame, text='Prenotazione', font=('Arial', 15))
+prenotazioneButton.pack(fill=X)
 
-pacchettiButton = Button(leftFrame, text='Esami teorici', font=('Arial', 15))
-pacchettiButton.pack(fill=X)
-
-teoriaButton = Button(leftFrame, text='Esami pratici', font=('Arial', 15))
+teoriaButton = Button(leftFrame, text='Esami teorici', font=('Arial', 15))
 teoriaButton.pack(fill=X)
 
-praticaButton = Button(leftFrame, text='Statistiche', font=('Arial', 15))
+praticaButton = Button(leftFrame, text='Esami pratici', font=('Arial', 15))
 praticaButton.pack(fill=X)
 
-praticaButton = Button(leftFrame, text='Impostazioni', font=('Arial', 15))
-praticaButton.pack(fill=X)
+statisticheButton = Button(leftFrame, text='Statistiche', font=('Arial', 15))
+statisticheButton.pack(fill=X)
 
+impostazioniButton = Button(leftFrame, text='Impostazioni', font=('Arial', 15))
+impostazioniButton.pack(fill=X)
 veicoliFrame = Frame(window, bg='lightblue')
 veicoliFrame.place(x=250, y=75, width=150, height=150)
 btnVeicoli = Button(veicoliFrame, text='Aggiungi \nveicolo', font=('Arial', 15))
