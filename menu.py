@@ -1,4 +1,9 @@
 from tkinter import *
+import iscrizione
+import studenti
+
+def show_iscrizione():
+    iscrizione.new_window(window)
 
 window=Tk()
 window.title('Menu Principale')
@@ -18,8 +23,11 @@ leftFrame.place(x=0, y=52, width=200, height=426)
 menuLable=Label(leftFrame, text='Menu', font=('Arial', 15))
 menuLable.pack(fill=X)
 
-studentsButton = Button(leftFrame, text='Studenti', font=('Arial', 15))
+studentsButton = Button(leftFrame, text='Studenti', font=('Arial', 15), command=studenti.new_window)
 studentsButton.pack(fill=X)
+
+iscrizioneButton = Button(leftFrame, text='Iscrizioni', font=('Arial', 15), command=lambda: show_iscrizione())
+iscrizioneButton.pack(fill=X)
 
 istruttoreButton = Button(leftFrame, text='Istruttori', font=('Arial', 15))
 istruttoreButton.pack(fill=X)

@@ -1,220 +1,221 @@
--- *********************************************
+-- ***************
 -- * SQL MySQL generation                      
 -- *--------------------------------------------
 -- * DB-MAIN version: 11.0.2              
 -- * Generator date: Sep 14 2021              
--- * Generation date: Wed Jul 31 15:32:42 2024 
--- * LUN file: C:\Users\Utente\Downloads\Progetto_basi_2.lun 
+-- * Generation date: Fri Aug 30 23:11:07 2024 
+-- * LUN file: C:\Users\Utente\OneDrive\Desktop\università\base di dati\Progetto_basi.lun 
 -- * Schema: SCUOLA GUIDA/progLogica 
--- ********************************************* 
-
+-- *************** 
 
 -- Database Section
--- ________________ 
-
-create database SCUOLAGUIDA;
-use SCUOLAGUIDA;
-
+-- ______ 
+CREATE DATABASE SCUOLAGUIDA;
+USE SCUOLAGUIDA;
 
 -- Tables Section
--- _____________ 
+-- _____ 
 
-create table ACQUISTI (
-     idAcquisto int not null auto_increment,
-     numeroFattura int not null,
-     costoTotale float(5) not null,
-     idStudente int not null,
-     constraint IDACQUISTO primary key (idAcquisto),
-     constraint FKemissione_ID unique (numeroFattura));
+CREATE TABLE Acquisti (
+     idAcquisto INT NOT NULL AUTO_INCREMENT,
+     costoTotale FLOAT NOT NULL,
+     idStudente INT NOT NULL,
+     CONSTRAINT PK_Acquisti PRIMARY KEY (idAcquisto)
+);
 
-create table ADMIN (
-     username  char(100) not null,
-     password char(100) not null,
-     constraint IDADMIN primary key (username ));
+CREATE TABLE Admins (
+     username VARCHAR(50) NOT NULL,
+     password VARCHAR(50) NOT NULL,
+     CONSTRAINT PK_Admins PRIMARY KEY (username)
+);
 
-create table ESAMIPRATICI (
-     idEsame int not null auto_increment,
-     data date not null,
-     costo float(5) not null,
-     esito char not null,
-     idStudente int not null,
-     CFEsaminatore char(100) not null,
-     idAcquisto int not null,
-     constraint IDESAME primary key (idEsame));
+CREATE TABLE EsamiPratici (
+     idEsame INT NOT NULL AUTO_INCREMENT,
+     data DATE NOT NULL,
+     costo FLOAT NOT NULL,
+     esito CHAR(1) NOT NULL,
+     idStudente INT NOT NULL,
+     CFEsaminatore VARCHAR(20) NOT NULL,
+     idAcquisto INT NOT NULL,
+     CONSTRAINT PK_EsamiPratici PRIMARY KEY (idEsame)
+);
 
-create table ESAMITEORICI (
-     idEsame int not null auto_increment,
-     data date not null,
-     costo float(5) not null,
-     esito char not null,
-     numErrori int not null,
-     idStudente int not null,
-     idAcquisto int not null,
-     constraint IDESAME primary key (idEsame));
+CREATE TABLE EsamiTeorici (
+     idEsame INT NOT NULL AUTO_INCREMENT,
+     data DATE NOT NULL,
+     costo FLOAT NOT NULL,
+     esito CHAR(1) NOT NULL,
+     numErrori INT NOT NULL,
+     idStudente INT NOT NULL,
+     idAcquisto INT NOT NULL,
+     CONSTRAINT PK_EsamiTeorici PRIMARY KEY (idEsame)
+);
 
-create table ESAMINATORI (
-     CFEsaminatore char(100) not null,
-     nome char(100) not null,
-     cognome char(100) not null,
-     indirzzo char(100) not null,
-     recapito char(100) not null,
-     dataNascita date not null,
-     constraint IDESAMINATORE primary key (CFEsaminatore));
+CREATE TABLE Esaminatori (
+     CFEsaminatore VARCHAR(20) NOT NULL,
+     nome VARCHAR(50) NOT NULL,
+     cognome VARCHAR(50) NOT NULL,
+     indirizzo VARCHAR(100) NOT NULL,
+     recapito VARCHAR(20) NOT NULL,
+     dataNascita DATE NOT NULL,
+     CONSTRAINT PK_Esaminatori PRIMARY KEY (CFEsaminatore)
+);
 
-create table FATTURE (
-     numeroFattura int not null auto_increment,
-     importoLordo float(5) not null,
-     IVA float(5) not null,
-     constraint IDFATTURA_ID primary key (numeroFattura));
+CREATE TABLE Fatture (
+     numeroFattura INT NOT NULL AUTO_INCREMENT,
+     importoLordo DECIMAL(10,2) NOT NULL,
+     IVA DECIMAL(5,2) NOT NULL,
+     importoNetto DECIMAL(10,2) NOT NULL,
+     idAcquisto INT NOT NULL,
+     CONSTRAINT PK_Fatture PRIMARY KEY (numeroFattura)
+);
 
-create table GUIDE (
-     idGuida int not null auto_increment,
-     data date not null,
-     ora int not null,
-     IdPacchetto int not null,
-     targa char(100) not null,
-     CFIstruttorePratico char(100) not null,
-     constraint IDGUIDA primary key (idGuida));
+CREATE TABLE Guide (
+     idGuida INT NOT NULL AUTO_INCREMENT,
+     data DATE NOT NULL,
+     ora TIME NOT NULL,
+     idPacchetto INT NOT NULL,
+     targa VARCHAR(20) NOT NULL,
+     CFIstruttorePratico VARCHAR(20) NOT NULL,
+     CONSTRAINT PK_Guide PRIMARY KEY (idGuida)
+);
 
-create table ISCRIZIONI (
-     idStudente int not null auto_increment,
-     dataInizio date not null,
-     CFStudente char(100) not null,
-     idTipologia int not null,
-     idAcquisto int,
-     costo float(5) not null,
-     chiusa char not null,
-     CFIstruttoreTeorico char(100) not null,
-     CFIstruttorePratico char(100) not null,
-     constraint IDISCRIZIONE primary key (idStudente),
-     constraint IDISCRIZIONE_1 unique (CFStudente, idTipologia, dataInizio));
+CREATE TABLE Iscrizioni (
+     idStudente INT NOT NULL AUTO_INCREMENT,
+     dataInizio DATE NOT NULL,
+     CFStudente VARCHAR(20) NOT NULL,
+     idTipologia INT NOT NULL,
+     costo INT NOT NULL,
+     chiusa CHAR(1) NOT NULL,
+     CFIstruttoreTeorico VARCHAR(20) NOT NULL,
+     CFIstruttorePratico VARCHAR(20) NOT NULL,
+     CONSTRAINT PK_Iscrizioni PRIMARY KEY (idStudente),
+     CONSTRAINT UK_Iscrizioni UNIQUE (CFStudente, idTipologia, dataInizio)
+);
 
-create table ISTRUTTORIPRATICI  (
-     CFIstruttorePratico char(100) not null,
-     nome char(100) not null,
-     cognome char(100) not null,
-     indirzzo char(100) not null,
-     recapito char(100) not null,
-     dataNascita date not null,
-     constraint IDISTRUTTOREPRATICO  primary key (CFIstruttorePratico));
+CREATE TABLE IstruttoriPratici (
+     CFIstruttorePratico VARCHAR(20) NOT NULL,
+     nome VARCHAR(50) NOT NULL,
+     cognome VARCHAR(50) NOT NULL,
+     indirizzo VARCHAR(100) NOT NULL,
+     recapito VARCHAR(20) NOT NULL,
+     dataNascita DATE NOT NULL,
+     CONSTRAINT PK_IstruttoriPratici PRIMARY KEY (CFIstruttorePratico)
+);
 
-create table ISTRUTTORITEORICI  (
-     CFIstruttoreTeorico char(100) not null,
-     nome char(100) not null,
-     cognome char(100) not null,
-     indirzzo char(100) not null,
-     recapito char(100) not null,
-     dataNascita date not null,
-     constraint IDISTRUTTORETEORICO  primary key (CFIstruttoreTeorico));
+CREATE TABLE IstruttoriTeorici (
+     CFIstruttoreTeorico VARCHAR(20) NOT NULL,
+     nome VARCHAR(50) NOT NULL,
+     cognome VARCHAR(50) NOT NULL,
+     indirizzo VARCHAR(100) NOT NULL,
+     recapito VARCHAR(20) NOT NULL,
+     dataNascita DATE NOT NULL,
+     CONSTRAINT PK_IstruttoriTeorici PRIMARY KEY (CFIstruttoreTeorico)
+);
 
-create table LEZIONI (
-     idLezione int not null auto_increment,
-     data date not null,
-     ora int not null,
-     CFIstruttoreTeorico char(100) not null,
-     constraint IDLEZIONE primary key (idLezione));
+CREATE TABLE Lezioni (
+     idLezione INT NOT NULL AUTO_INCREMENT,
+     data DATE NOT NULL,
+     ora TIME NOT NULL,
+     CFIstruttoreTeorico VARCHAR(20) NOT NULL,
+     CONSTRAINT PK_Lezioni PRIMARY KEY (idLezione)
+);
 
-create table PACCHETTI (
-     IdPacchetto int not null auto_increment,
-     prezzo float(5) not null,
-     tipo int not null,
-     idAcquisto int not null,
-     constraint IDPACCHETTO primary key (IdPacchetto));
+CREATE TABLE Pacchetti (
+     idPacchetto INT NOT NULL AUTO_INCREMENT,
+     prezzo FLOAT NOT NULL,
+     tipo INT NOT NULL,
+     finito CHAR(1) NOT NULL,
+     idAcquisto INT NOT NULL,
+     CONSTRAINT PK_Pacchetti PRIMARY KEY (idPacchetto)
+);
 
-create table STUDENTI (
-     CFStudente char(100) not null,
-     nome char(100) not null,
-     cognome char(100) not null,
-     indirzzo char(100) not null,
-     recapito char(100) not null,
-     dataNascita date not null,
-     constraint IDCLIENTE primary key (CFStudente));
+CREATE TABLE Studenti (
+     CFStudente VARCHAR(20) NOT NULL,
+     nome VARCHAR(50) NOT NULL,
+     cognome VARCHAR(50) NOT NULL,
+     indirizzo VARCHAR(100) NOT NULL,
+     recapito VARCHAR(20) NOT NULL,
+     dataNascita DATE NOT NULL,
+     CONSTRAINT PK_Studenti PRIMARY KEY (CFStudente)
+);
 
-create table TIPOLOGIEPATENTE (
-     idTipologia int not null auto_increment,
-     nome char(100) not null,
-     eta int not null,
-     constraint IDTIPOLOGIAPATENTE primary key (idTipologia));
+CREATE TABLE TipologiePatenti (
+     idTipologia INT NOT NULL AUTO_INCREMENT,
+     nome VARCHAR(50) NOT NULL,
+     eta INT NOT NULL,
+     CONSTRAINT PK_TipologiePatenti PRIMARY KEY (idTipologia)
+);
 
-create table VEICOLI (
-     targa char(100) not null,
-     modello char(100) not null,
-     constraint IDVEICOLO primary key (targa));
-
+CREATE TABLE Veicoli (
+     targa VARCHAR(20) NOT NULL,
+     modello VARCHAR(50) NOT NULL,
+     CONSTRAINT PK_Veicoli PRIMARY KEY (targa)
+);
 
 -- Constraints Section
--- ___________________ 
+-- _______ 
 
-alter table ACQUISTI add constraint FKappartenenza
-     foreign key (idStudente)
-     references ISCRIZIONI (idStudente);
+ALTER TABLE Acquisti ADD CONSTRAINT FK_Appartenenza
+     FOREIGN KEY (idStudente)
+     REFERENCES Iscrizioni (idStudente);
 
-alter table ACQUISTI add constraint FKemissione_FK
-     foreign key (numeroFattura)
-     references FATTURE (numeroFattura);
+ALTER TABLE EsamiPratici ADD CONSTRAINT FK_SostienePratico
+     FOREIGN KEY (idStudente)
+     REFERENCES Iscrizioni (idStudente);
 
-alter table ESAMIPRATICI add constraint FKsostienePratico
-     foreign key (idStudente)
-     references ISCRIZIONI (idStudente);
+ALTER TABLE EsamiPratici ADD CONSTRAINT FK_Esamina
+     FOREIGN KEY (CFEsaminatore)
+     REFERENCES Esaminatori (CFEsaminatore);
 
-alter table ESAMIPRATICI add constraint FKesamina
-     foreign key (CFEsaminatore)
-     references ESAMINATORI (CFEsaminatore);
+ALTER TABLE EsamiPratici ADD CONSTRAINT FK_AcquisizionePratico
+     FOREIGN KEY (idAcquisto)
+     REFERENCES Acquisti (idAcquisto);
 
-alter table ESAMIPRATICI add constraint FKacquisizione
-     foreign key (idAcquisto)
-     references ACQUISTI (idAcquisto);
+ALTER TABLE EsamiTeorici ADD CONSTRAINT FK_SostieneTeorico
+     FOREIGN KEY (idStudente)
+     REFERENCES Iscrizioni (idStudente);
 
-alter table ESAMITEORICI add constraint FKsostieneTeorico
-     foreign key (idStudente)
-     references ISCRIZIONI (idStudente);
+ALTER TABLE EsamiTeorici ADD CONSTRAINT FK_AcquisizioneTeorico
+     FOREIGN KEY (idAcquisto)
+     REFERENCES Acquisti (idAcquisto);
 
-alter table ESAMITEORICI add constraint FKacqusizione
-     foreign key (idAcquisto)
-     references ACQUISTI (idAcquisto);
+ALTER TABLE Fatture ADD CONSTRAINT FK_FatturaAcquisto
+     FOREIGN KEY (idAcquisto)
+     REFERENCES Acquisti (idAcquisto);
 
--- Not implemented
--- alter table FATTURE add constraint IDFATTURA_CHK
---     check(exists(select * from ACQUISTI
---                  where ACQUISTI.numeroFattura = numeroFattura)); 
+ALTER TABLE Guide ADD CONSTRAINT FK_Composizione
+     FOREIGN KEY (idPacchetto)
+     REFERENCES Pacchetti (idPacchetto);
 
-alter table GUIDE add constraint FKcomposizione
-     foreign key (IdPacchetto)
-     references PACCHETTI (IdPacchetto);
+ALTER TABLE Guide ADD CONSTRAINT FK_Mezzo
+     FOREIGN KEY (targa)
+     REFERENCES Veicoli (targa);
 
-alter table GUIDE add constraint FKmezzo
-     foreign key (targa)
-     references VEICOLI (targa);
+ALTER TABLE Guide ADD CONSTRAINT FK_Segue
+     FOREIGN KEY (CFIstruttorePratico)
+     REFERENCES IstruttoriPratici (CFIstruttorePratico);
 
-alter table GUIDE add constraint FKsegue
-     foreign key (CFIstruttorePratico)
-     references ISTRUTTORIPRATICI  (CFIstruttorePratico);
+ALTER TABLE Iscrizioni ADD CONSTRAINT FK_AssisteTeorico 
+     FOREIGN KEY (CFIstruttoreTeorico)
+     REFERENCES IstruttoriTeorici (CFIstruttoreTeorico);
 
-alter table ISCRIZIONI add constraint FKassisteTeorico
-     foreign key (CFIstruttoreTeorico)
-     references ISTRUTTORITEORICI  (CFIstruttoreTeorico);
+ALTER TABLE Iscrizioni ADD CONSTRAINT FK_AssistePratico
+     FOREIGN KEY (CFIstruttorePratico)
+     REFERENCES IstruttoriPratici (CFIstruttorePratico);
 
-alter table ISCRIZIONI add constraint FKassistePratico
-     foreign key (CFIstruttorePratico)
-     references ISTRUTTORIPRATICI  (CFIstruttorePratico);
+ALTER TABLE Iscrizioni ADD CONSTRAINT FK_Effettuazione
+     FOREIGN KEY (CFStudente)
+     REFERENCES Studenti (CFStudente);
 
-alter table ISCRIZIONI add constraint FKeffettuazione
-     foreign key (CFStudente)
-     references STUDENTI (CFStudente);
+ALTER TABLE Iscrizioni ADD CONSTRAINT FK_Tipologia
+     FOREIGN KEY (idTipologia)
+     REFERENCES TipologiePatenti (idTipologia);
 
-alter table ISCRIZIONI add constraint FKtipologia
-     foreign key (idTipologia)
-     references TIPOLOGIEPATENTE (idTipologia);
+ALTER TABLE Lezioni ADD CONSTRAINT FK_Spiegazione
+     FOREIGN KEY (CFIstruttoreTeorico)
+     REFERENCES IstruttoriTeorici (CFIstruttoreTeorico);
 
-alter table LEZIONI add constraint FKspiegazione
-     foreign key (CFIstruttoreTeorico)
-     references ISTRUTTORITEORICI  (CFIstruttoreTeorico);
-
-alter table PACCHETTI add constraint FKcomprende
-     foreign key (idAcquisto)
-     references ACQUISTI (idAcquisto);
-
-
--- Index Section
--- _____________ 
-
+ALTER TABLE Pacchetti ADD CONSTRAINT FK_Comprende
+     FOREIGN KEY (idAcquisto)
+     REFERENCES Acquisti (idAcquisto);

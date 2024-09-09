@@ -5,7 +5,7 @@ import connection
 def login():
     username = usernameEntry.get()
     password = passwordEntry.get()
-    if connection.verifica(username, password):
+    if connection.is_Present(username, password):
         return msg.showinfo("Login", "Login effettuato con successo!")
     
     return msg.showerror("Errore", "Username o password errati.")
