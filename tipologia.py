@@ -16,7 +16,7 @@ def addTipologia():
     updateView()
 
 window=Tk()
-window.title('Veicoli')
+window.title('Tipologie')
 window.geometry('930x478')
 window.resizable(True, True)
 

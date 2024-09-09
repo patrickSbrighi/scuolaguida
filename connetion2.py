@@ -128,7 +128,47 @@ def get_tempo_medio_patente():
 
 def get_studenti_teorici():
      try: 
-        sql = "SELECT stu.idStudente, stu.nome, stu.cognome FROM (SELECT I.idStudente, S.nome, S.cognome FROM scuolaguida.iscrizioni I JOIN scuolaguida.studenti S ON (I.CFStudente = S.CFStudente) JOIN scuolaguida.tipologiepatenti T ON (T.idTipologia = I.idTipologia) WHERE S.dataNascita < DATE_SUB(DATE_SUB(DATE_SUB(CURDATE(), INTERVAL T.eta YEAR), INTERVAL 1 MONTH), INTERVAL 1 DAY) AND I.chiusa = 0 AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = 1) ORDER BY I.dataInizio) stu JOIN scuolaguida.acquisti A ON stu.idStudente = A.idStudente JOIN scuolaguida.esamiteorici ES ON A.idAcquisto = ES.idAcquisto WHERE ES.esito IS NULL"
+        sql = "SELECT stu.idStudente, stu.nome, stu.cognome FROM (SELECT I.idStudente, S.nome, S.cognome FROM scuolaguida.iscrizioni I JOIN scuolaguida.studenti S ON (I.CFStudente = S.CFStudente) JOIN scuolaguida.tipologiepatenti T ON (T.idTipologia = I.idTipologia) WHERE S.dataNascita < DATE_SUB(DATE_SUB(DATE_SUB(CURDATE(), INTERVAL T.eta YEAR), INTERVAL 1 MONTH), INTERVAL 1 DAY) AND I.chiusa = 0 AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = 1) ORDER BY I.dataInizio) stu JOIN scuolaguida.acquisti A ON stu.idStudente = A.idStudente JOIN scuolaguida.esamiteorici ES ON A.idAcquisto = ES.idAcquisto WHERE ES.esito IS NULL OR ES.esito = ''"
+        mycursor.execute(sql)
+        myresult = mycursor.fetchall()
+        return myresult
+     except:
+        msg.showerror('Error', 'Database is not responding')
+
+def add_esame_teorico(ID, errori, data):
+    try:
+        maxError = 3
+        sql="UPDATE `scuolaguida`.`esamiteorici` SET `data` = %s, `esito` = %s, `numErrori` = %s WHERE (`idStudente` = %s);"
+        if errori <= maxError:
+            mycursor.execute(sql, (data, 1, errori, ID))
+            mydb.commit()
+        else:
+            mycursor.execute(sql, (data, 0, errori, ID))
+            mydb.commit()
+    except:
+        msg.showerror('Error', 'Operation failed')
+
+def get_studenti_pratici():
+     try: 
+        sql = "SELECT sub.idStudente, S.nome, S.cognome FROM (SELECT I.idStudente, I.CFStudente, COUNT(G.idGuida) guide FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) JOIN scuolaguida.acquisti A ON (A.idStudente = I.idStudente) JOIN scuolaguida.pacchetti P ON (A.idAcquisto = P.idAcquisto) JOIN scuolaguida.guide G ON (G.IdPacchetto = P.IdPacchetto) WHERE I.chiusa = 'N' AND I.idStudente IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = 'P') AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici E ON (I.idStudente = E.idStudente) WHERE E.esito = 'P') GROUP BY I.idStudente HAVING guide >= 12 ORDER BY I.dataInizio) sub JOIN scuolaguida.studenti S ON sub.CFStudente = S.CFStudente JOIN scuolaguida.acquisti A ON sub.idStudente = A.idStudente JOIN scuolaguida.esamipratici ES ON A.idAcquisto = ES.idAcquisto WHERE ES.esito IS NULL OR ES.esito = ''"
+        mycursor.execute(sql)
+        myresult = mycursor.fetchall()
+        return myresult
+     except:
+        msg.showerror('Error', 'Database is not responding')
+
+def add_esame_pratico(ID, esito, data, esaminatore):
+    try:
+        maxError = 3
+        sql="UPDATE `scuolaguida`.`esamipratici` SET `data` = %s, `esito` = %s, `CFEsaminatore` = %s WHERE (`idStudente` = %s);"
+        mycursor.execute(sql, (data, esito, esaminatore, ID))
+        mydb.commit()
+    except:
+        msg.showerror('Error', 'Operation failed')
+
+def get_esaminatori():
+     try: 
+        sql = "SELECT CFEsaminatore, nome, cognome FROM scuolaguida.esaminatori;"
         mycursor.execute(sql)
         myresult = mycursor.fetchall()
         return myresult

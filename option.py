@@ -1,7 +1,7 @@
 from tkinter import *
 
 window=Tk()
-window.title('Veicoli')
+window.title('Option')
 window.geometry('930x478')
 window.resizable(True, True)
 

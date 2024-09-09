@@ -16,7 +16,7 @@ def addAdmin():
     updateView()
 
 window=Tk()
-window.title('Veicoli')
+window.title('Admin')
 window.geometry('930x478')
 window.resizable(True, True)
 

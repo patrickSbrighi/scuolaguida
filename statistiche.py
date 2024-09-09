@@ -30,7 +30,7 @@ def updateIstruttoriTeorici():
         treeIstruttoriTeorici.insert('',END,values=ist)
 
 window=Tk()
-window.title('Veicoli')
+window.title('Statistiche')
 window.geometry('930x478')
 window.resizable(True, True)
 
