@@ -14,7 +14,7 @@ except:
 
 def get_veicoli():
     try:
-        sql="SELECT * FROM scuolaguida.veicoli"
+        sql="SELECT targa FROM scuolaguida.veicoli"
         mycursor.execute(sql)
         myresult = mycursor.fetchall()
         return myresult
@@ -150,7 +150,7 @@ def add_esame_teorico(ID, errori, data):
 
 def get_studenti_pratici():
      try: 
-        sql = "SELECT sub.idStudente, S.nome, S.cognome FROM (SELECT I.idStudente, I.CFStudente, COUNT(G.idGuida) guide FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) JOIN scuolaguida.acquisti A ON (A.idStudente = I.idStudente) JOIN scuolaguida.pacchetti P ON (A.idAcquisto = P.idAcquisto) JOIN scuolaguida.guide G ON (G.IdPacchetto = P.IdPacchetto) WHERE I.chiusa = 'N' AND I.idStudente IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = 'P') AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici E ON (I.idStudente = E.idStudente) WHERE E.esito = 'P') GROUP BY I.idStudente HAVING guide >= 12 ORDER BY I.dataInizio) sub JOIN scuolaguida.studenti S ON sub.CFStudente = S.CFStudente JOIN scuolaguida.acquisti A ON sub.idStudente = A.idStudente JOIN scuolaguida.esamipratici ES ON A.idAcquisto = ES.idAcquisto WHERE ES.esito IS NULL OR ES.esito = ''"
+        sql = "SELECT sub.idStudente, S.nome, S.cognome FROM (SELECT I.idStudente, I.CFStudente, COUNT(G.idGuida) guide FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) JOIN scuolaguida.acquisti A ON (A.idStudente = I.idStudente) JOIN scuolaguida.pacchetti P ON (A.idAcquisto = P.idAcquisto) JOIN scuolaguida.guide G ON (G.IdPacchetto = P.IdPacchetto) WHERE I.chiusa = '0' AND I.idStudente IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = '1') AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici E ON (I.idStudente = E.idStudente) WHERE E.esito = '1') GROUP BY I.idStudente HAVING guide >= 12 ORDER BY I.dataInizio) sub JOIN scuolaguida.studenti S ON sub.CFStudente = S.CFStudente JOIN scuolaguida.acquisti A ON sub.idStudente = A.idStudente JOIN scuolaguida.esamipratici ES ON A.idAcquisto = ES.idAcquisto WHERE ES.esito IS NULL OR ES.esito = ''"
         mycursor.execute(sql)
         myresult = mycursor.fetchall()
         return myresult
@@ -159,7 +159,6 @@ def get_studenti_pratici():
 
 def add_esame_pratico(ID, esito, data, esaminatore):
     try:
-        maxError = 3
         sql="UPDATE `scuolaguida`.`esamipratici` SET `data` = %s, `esito` = %s, `CFEsaminatore` = %s WHERE (`idStudente` = %s);"
         mycursor.execute(sql, (data, esito, esaminatore, ID))
         mydb.commit()
@@ -174,3 +173,101 @@ def get_esaminatori():
         return myresult
      except:
         msg.showerror('Error', 'Database is not responding')
+
+def get_studenti_per_guide():
+     try: 
+        sql = "SELECT I.idStudente, S.nome, S.cognome FROM scuolaguida.iscrizioni I JOIN scuolaguida.studenti S ON I.CFStudente = S.CFStudente JOIN scuolaguida.esamiteorici E ON I.idStudente = E.idStudente WHERE esito = 1 AND chiusa = 0"
+        mycursor.execute(sql)
+        myresult = mycursor.fetchall()
+        return myresult
+     except:
+        msg.showerror('Error', 'Database is not responding')
+
+def get_guide_future():
+    try: 
+        sql = "SELECT idGuida, data, ora, targa, CFIstruttorePratico FROM scuolaguida.guide WHERE data >= CURDATE()"
+        mycursor.execute(sql)
+        myresult = mycursor.fetchall()
+        return myresult
+    except:
+        msg.showerror('Error', 'Database is not responding')
+
+def get_disponibilita_istruttore(data, CF):
+    try:
+        sql = "SELECT ora FROM scuolaguida.guide WHERE data = %s AND CFIstruttorePratico = %s"
+        mycursor.execute(sql, (data, CF))
+        myresult = mycursor.fetchall()
+        return myresult
+    except Exception as e:
+        msg.showerror('Error', f'Database is not responding: {e}')
+
+def get_istruttore_pratico_studente(ID):
+    try:
+        sql = "SELECT CFIstruttorePratico FROM scuolaguida.iscrizioni WHERE idStudente = %s"
+        mycursor.execute(sql,(ID,))
+        myresult = mycursor.fetchall()
+        return myresult
+    except:
+        msg.showerror('Error', 'Database is not responding')
+
+def riprogramma_guida(ID, data, ora):
+    try:
+        if isinstance(ora, str):
+            ora = int(ora)
+        ora_formattata = f"{ora:02d}:00:00" 
+        sql="UPDATE `scuolaguida`.`guide` SET `data` = %s, `ora` = %s WHERE (`idGuida` = %s);"
+        mycursor.execute(sql, (data, ora_formattata, ID))
+        mydb.commit()
+    except:
+        msg.showerror('Error', 'Operation failed')
+
+def get_guide_rimaste(ID):
+    try:
+        sql = "SELECT (p.tipo - count(g.idGuida)) mancanti from scuolaguida.pacchetti p join scuolaguida.guide g on (p.idPacchetto = g.idPacchetto) where p.idPacchetto in (SELECT distinct P.idPacchetto FROM scuolaGuida.iscrizioni I JOIN scuolaguida.acquisti A ON (I.idStudente = A.idStudente) JOIN scuolaguida.pacchetti P ON (P.idAcquisto = A.idAcquisto) JOIN scuolaguida.guide G ON (G.idPacchetto = P.idPacchetto) WHERE finito = 0 AND I.idStudente = %s) group by p.tipo;"
+        mycursor.execute(sql,(ID,))
+        myresult = mycursor.fetchall()
+        return myresult
+    except:
+        msg.showerror('Error', 'Database is not responding')
+
+def get_id_pacchetto(ID):
+    try:
+        sql = "SELECT idPacchetto FROM scuolaguida.pacchetti P JOIN scuolaguida.acquisti A ON P.idAcquisto = A.idAcquisto WHERE idStudente=%s AND finito = 0;"
+        mycursor.execute(sql,(ID,))
+        myresult = mycursor.fetchall()
+        return myresult
+    except:
+        msg.showerror('Error', 'Database is not responding')
+
+def add_guida(data, ora, idPacchetto, targa, CFist):
+    try:
+        if isinstance(ora, str):
+            ora = int(ora)
+        ora_formattata = f"{ora:02d}:00:00"
+        sql = "INSERT INTO `scuolaguida`.`guide` (`data`, `ora`, `idPacchetto`, `targa`, `CFIstruttorePratico`) VALUES (%s, %s, %s, %s, %s);"
+        mycursor.execute(sql, (data, ora_formattata, idPacchetto, targa, CFist))
+        mydb.commit()
+        chiudi_pacchetto()
+    except:
+        msg.showerror('Error', 'Operation failed')
+
+def get_pacchetto_da_chiudere():
+    try:
+        sql = "SELECT idPacchetto FROM (SELECT DISTINCT P.idPacchetto, P.tipo, COUNT(idGuida) guide FROM scuolaguida.pacchetti P JOIN scuolaguida.guide G ON (P.idPacchetto = G.idPacchetto) WHERE P.finito = 0 GROUP BY P.idPacchetto) mancanti WHERE guide = tipo"
+        mycursor.execute(sql)
+        myresult = mycursor.fetchall()
+        return myresult
+    except:
+        msg.showerror('Error', 'Database is not responding')
+
+def chiudi_pacchetto():
+    try:
+        id = get_pacchetto_da_chiudere()
+        if id:
+            id = id[0][0]
+            sql = "UPDATE `scuolaguida`.`pacchetti` SET `finito` = '1' WHERE (`IdPacchetto` = %s);"
+            mycursor.execute(sql, (id,))
+            mydb.commit()
+    except:
+        msg.showerror('Error', 'Operation failed 1')
+
