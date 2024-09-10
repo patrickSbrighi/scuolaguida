@@ -223,7 +223,7 @@ def riprogramma_guida(ID, data, ora):
 
 def get_guide_rimaste(ID):
     try:
-        sql = "SELECT (p.tipo - count(g.idGuida)) mancanti from scuolaguida.pacchetti p join scuolaguida.guide g on (p.idPacchetto = g.idPacchetto) where p.idPacchetto in (SELECT distinct P.idPacchetto FROM scuolaGuida.iscrizioni I JOIN scuolaguida.acquisti A ON (I.idStudente = A.idStudente) JOIN scuolaguida.pacchetti P ON (P.idAcquisto = A.idAcquisto) JOIN scuolaguida.guide G ON (G.idPacchetto = P.idPacchetto) WHERE finito = 0 AND I.idStudente = %s) group by p.tipo;"
+        sql = "SELECT (p.tipo - count(g.idGuida)) mancanti from scuolaguida.pacchetti p left join scuolaguida.guide g on (p.idPacchetto = g.idPacchetto) where p.idPacchetto in (SELECT distinct P.idPacchetto FROM scuolaGuida.iscrizioni I JOIN scuolaguida.acquisti A ON (I.idStudente = A.idStudente) JOIN scuolaguida.pacchetti P ON (P.idAcquisto = A.idAcquisto) WHERE finito = 0 AND I.idStudente = %s) group by p.tipo;"
         mycursor.execute(sql,(ID,))
         myresult = mycursor.fetchall()
         return myresult
