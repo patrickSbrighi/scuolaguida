@@ -4,14 +4,10 @@ from connetion2 import *
 import esamiPratici
 import esamiTeorici
 import option
-import selezionaPrenotazione
+import prenotazioneStudente
 import statistiche
 
 def create():
-    def openPrenotazione():
-        window.destroy()
-        selezionaPrenotazione.create()
-
     def openEsamiTeorici():
         window.destroy()
         esamiTeorici.create()
@@ -28,19 +24,13 @@ def create():
         window.destroy()
         option.create()
 
-    def clearTreeview():
-        for item in list.get_children():
-            list.delete(item)
-
-    def updateView():
-        clearTreeview()
-        for vec in get_veicoli():
-            list.insert('',END,values=vec)
-
-    def addVeicolo():
-        add_veicolo(boxTarga.get(), boxModello.get())
-        updateView()
-
+    def openSelected(stud):
+        if stud:
+            window.destroy()
+            prenotazioneStudente.create(stud)
+        else:
+            msg.showerror('Error', 'Seleziona uno studente')
+   
     def center_window(win, width=930, height=478):
         screen_width = win.winfo_screenwidth()
         screen_height = win.winfo_screenheight()
@@ -50,8 +40,18 @@ def create():
         
         win.geometry(f'{width}x{height}+{x}+{y}')
 
+    def updateView():
+        for stud in get_studenti_per_guide():
+            list.insert('',END,values=stud)
+
+    def on_select(event):
+        selected_item = list.selection()[0]
+        item_values = list.item(selected_item, 'values')
+        boxID.delete(0, 'end')
+        boxID.insert(0, item_values[0])
+
     window=Tk()
-    window.title('Veicoli')
+    window.title('Prenotazione')
     window.geometry('930x478')
     window.resizable(True, True)
 
@@ -70,7 +70,7 @@ def create():
     acquistiButton = Button(leftFrame, text='Acquisti', font=('Arial', 15))
     acquistiButton.pack(fill=X)
 
-    prenotazioneButton = Button(leftFrame, text='Prenotazione', font=('Arial', 15), command= lambda:openPrenotazione())
+    prenotazioneButton = Button(leftFrame, text='Prenotazione', font=('Arial', 15))
     prenotazioneButton.pack(fill=X)
 
     teoriaButton = Button(leftFrame, text='Esami teorici', font=('Arial', 15), command=lambda:openEsamiTeorici())
@@ -85,33 +85,34 @@ def create():
     impostazioniButton = Button(leftFrame, text='Impostazioni', font=('Arial', 15), command=lambda:openOption())
     impostazioniButton.pack(fill=X)
 
-    addFrame = Frame(window, bg="lightgray")
-    addFrame.place(x=250, y=75, width=200, height=175)
+    lblTitolo = Label(window, text="Seleziona uno studente", font=('times new roman', 15))
+    lblTitolo.place(x=215, y=65)
 
-    lblTarga = Label(addFrame, text="Inserisci la targa", font=('times new roman', 15), bg='lightgray')
-    lblTarga.place(x=18,y=2)
-    boxTarga = Entry(addFrame, font=('times new roman', 12), bg="lightyellow")
-    boxTarga.grid(row=0,column=1, padx=18, pady=30)
+    studentiFrame = Frame(window)
+    studentiFrame.place(x=215, y=90, width=400, height=375)
 
-    lblModello = Label(addFrame, text="Inserisci il modello", font=('times new roman', 15), bg='lightgray')
-    lblModello.place(x=18,y=55)
-    boxModello = Entry(addFrame, font=('times new roman', 12), bg="lightyellow")
-    boxModello.grid(row=1,column=1, padx=18)
-
-    btnInvia = Button(addFrame, text="Invio", font=('Arial', 15), command=lambda:addVeicolo())
-    btnInvia.place(x=50, y=120, width=100)
-
-    viewFrame = Frame(window)
-    viewFrame.place(x=500, y=75, width=400, height=300)
-
-    list = ttk.Treeview(viewFrame, columns=('Targa', 'Modello'), show="headings")
+    list = ttk.Treeview(studentiFrame, columns=('ID', 'Nome', 'Cognome'), show="headings")
     list.pack(expand=True, fill='both')
-    list.column('Targa', width=150, anchor='center')
-    list.column('Modello', width=150, anchor='center')
-    list.heading('Targa', text='Targa')
-    list.heading('Modello', text='Modello')
+    list.column('ID', width=100, anchor='center')
+    list.column('Nome', width=100, anchor='center')
+    list.column('Cognome', width=100, anchor='center')
+    list.heading('ID', text='ID')
+    list.heading('Nome', text='Nome')
+    list.heading('Cognome', text='Cognome')
 
+    addFrame = Frame(window, bg="lightgray")
+    addFrame.place(x=675, y=175, width=200, height=125)
+
+    lblID = Label(addFrame, text="Seleziona uno studente", font=('times new roman', 15), bg='lightgray')
+    lblID.place(x=8,y=5)
+    boxID = Entry(addFrame, font=('times new roman', 12), bg="lightyellow", state='readonly')
+    boxID.grid(row=0,column=1, padx=8, pady=30)
+
+    btnInvia = Button(addFrame, text="Invio", font=('Arial', 15), command=lambda:openSelected(boxID.get()))
+    btnInvia.place(x=50, y=65, width=100)
+
+    list.bind('<<TreeviewSelect>>', on_select)
     updateView()
-    center_window(window)
 
+    center_window(window)
     window.mainloop()

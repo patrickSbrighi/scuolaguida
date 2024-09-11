@@ -1,62 +1,110 @@
 from tkinter import *
+import admin
+import esamiPratici
+import esamiTeorici
+import selezionaPrenotazione
+import statistiche
+import tipologia
+import veicoli
 
-window=Tk()
-window.title('Veicoli')
-window.geometry('930x478')
-window.resizable(True, True)
+def create():
+    def openPrenotazione():
+        window.destroy()
+        selezionaPrenotazione.create()
 
-titleLable=Label(window, text='Scuola guida', font=('Arial', 30, 'bold'), bg='black', fg='white')
-titleLable.place(x=0, y=0, relwidth=1)
+    def openEsamiTeorici():
+        window.destroy()
+        esamiTeorici.create()
 
-logoutButton = Button(window, text='Logout', font=('arial', 10, 'bold'), bg='white')
-logoutButton.place(x=850, y=13)
+    def openEsamiPratici():
+        window.destroy()
+        esamiPratici.create()
 
-leftFrame = Frame(window, bg='lightgray')
-leftFrame.place(x=0, y=52, width=200, relheight=1)
+    def openStatistiche():
+        window.destroy()
+        statistiche.create()
 
-iscrizioneButton = Button(leftFrame, text='Iscrizioni', font=('Arial', 15))
-iscrizioneButton.pack(fill=X)
+    def openTipologia():
+        window.destroy()
+        tipologia.create()
 
-acquistiButton = Button(leftFrame, text='Acquisti', font=('Arial', 15))
-acquistiButton.pack(fill=X)
+    def openAdmin():
+        window.destroy()
+        admin.create()
 
-prenotazioneButton = Button(leftFrame, text='Prenotazione', font=('Arial', 15))
-prenotazioneButton.pack(fill=X)
+    def openVeicoli():
+        window.destroy()
+        veicoli.create()
 
-teoriaButton = Button(leftFrame, text='Esami teorici', font=('Arial', 15))
-teoriaButton.pack(fill=X)
+    def center_window(win, width=930, height=478):
+        screen_width = win.winfo_screenwidth()
+        screen_height = win.winfo_screenheight()
+        
+        x = (screen_width // 2) - (width // 2)
+        y = (screen_height // 2) - (height // 2)
+        
+        win.geometry(f'{width}x{height}+{x}+{y}')
 
-praticaButton = Button(leftFrame, text='Esami pratici', font=('Arial', 15))
-praticaButton.pack(fill=X)
+    window=Tk()
+    window.title('Option')
+    window.geometry('930x478')
+    window.resizable(True, True)
 
-statisticheButton = Button(leftFrame, text='Statistiche', font=('Arial', 15))
-statisticheButton.pack(fill=X)
+    titleLable=Label(window, text='Scuola guida', font=('Arial', 30, 'bold'), bg='black', fg='white')
+    titleLable.place(x=0, y=0, relwidth=1)
 
-impostazioniButton = Button(leftFrame, text='Impostazioni', font=('Arial', 15))
-impostazioniButton.pack(fill=X)
-veicoliFrame = Frame(window, bg='lightblue')
-veicoliFrame.place(x=250, y=75, width=150, height=150)
-btnVeicoli = Button(veicoliFrame, text='Aggiungi \nveicolo', font=('Arial', 15))
-btnVeicoli.pack(fill='both', expand=True)
+    logoutButton = Button(window, text='Logout', font=('arial', 10, 'bold'), bg='white')
+    logoutButton.place(x=850, y=13)
 
-tipologiaFrame = Frame(window, bg='lightblue')
-tipologiaFrame.place(x=475, y=75, width=150, height=150)
-btnTipologia = Button(tipologiaFrame, text='Aggiungi \ntipologia', font=('Arial', 15))
-btnTipologia.pack(fill='both', expand=True)
+    leftFrame = Frame(window, bg='lightgray')
+    leftFrame.place(x=0, y=52, width=200, relheight=1)
 
-adminFrame = Frame(window, bg='lightblue')
-adminFrame.place(x=700, y=75, width=150, height=150)
-btnAdmin = Button(adminFrame, text='Aggiungi \nadmin', font=('Arial', 15))
-btnAdmin.pack(fill='both', expand=True)
+    iscrizioneButton = Button(leftFrame, text='Iscrizioni', font=('Arial', 15))
+    iscrizioneButton.pack(fill=X)
 
-istruttoriFrame = Frame(window, bg='lightblue')
-istruttoriFrame.place(x=360, y=275, width=150, height=150)
-btnIstruttori = Button(istruttoriFrame, text='Aggiungi \nistruttori', font=('Arial', 15))
-btnIstruttori.pack(fill='both', expand=True)
+    acquistiButton = Button(leftFrame, text='Acquisti', font=('Arial', 15))
+    acquistiButton.pack(fill=X)
 
-esaminatoriFrame = Frame(window, bg='lightblue')
-esaminatoriFrame.place(x=600, y=275, width=150, height=150)
-btnEsaminatori = Button(esaminatoriFrame, text='Aggiungi \nesaminatori', font=('Arial', 15))
-btnEsaminatori.pack(fill='both', expand=True)
+    prenotazioneButton = Button(leftFrame, text='Prenotazione', font=('Arial', 15), command= lambda:openPrenotazione())
+    prenotazioneButton.pack(fill=X)
 
-window.mainloop()
+    teoriaButton = Button(leftFrame, text='Esami teorici', font=('Arial', 15), command=lambda:openEsamiTeorici())
+    teoriaButton.pack(fill=X)
+
+    praticaButton = Button(leftFrame, text='Esami pratici', font=('Arial', 15), command=lambda:openEsamiPratici())
+    praticaButton.pack(fill=X)
+
+    statisticheButton = Button(leftFrame, text='Statistiche', font=('Arial', 15), command=lambda:openStatistiche())
+    statisticheButton.pack(fill=X)
+
+    impostazioniButton = Button(leftFrame, text='Impostazioni', font=('Arial', 15))
+    impostazioniButton.pack(fill=X)
+
+    veicoliFrame = Frame(window, bg='lightblue')
+    veicoliFrame.place(x=250, y=75, width=150, height=150)
+    btnVeicoli = Button(veicoliFrame, text='Aggiungi \nveicolo', font=('Arial', 15), command=lambda: openVeicoli())
+    btnVeicoli.pack(fill='both', expand=True)
+
+    tipologiaFrame = Frame(window, bg='lightblue')
+    tipologiaFrame.place(x=475, y=75, width=150, height=150)
+    btnTipologia = Button(tipologiaFrame, text='Aggiungi \ntipologia', font=('Arial', 15), command=lambda: openTipologia())
+    btnTipologia.pack(fill='both', expand=True)
+
+    adminFrame = Frame(window, bg='lightblue')
+    adminFrame.place(x=700, y=75, width=150, height=150)
+    btnAdmin = Button(adminFrame, text='Aggiungi \nadmin', font=('Arial', 15), command=lambda: openAdmin())
+    btnAdmin.pack(fill='both', expand=True)
+
+    istruttoriFrame = Frame(window, bg='lightblue')
+    istruttoriFrame.place(x=360, y=275, width=150, height=150)
+    btnIstruttori = Button(istruttoriFrame, text='Aggiungi \nistruttori', font=('Arial', 15))
+    btnIstruttori.pack(fill='both', expand=True)
+
+    esaminatoriFrame = Frame(window, bg='lightblue')
+    esaminatoriFrame.place(x=600, y=275, width=150, height=150)
+    btnEsaminatori = Button(esaminatoriFrame, text='Aggiungi \nesaminatori', font=('Arial', 15))
+    btnEsaminatori.pack(fill='both', expand=True)
+
+    center_window(window)
+
+    window.mainloop()
