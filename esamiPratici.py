@@ -24,7 +24,10 @@ def create():
     def openOption():
         window.destroy()
         option.create()
-        
+
+    def get_esito_value():
+        return '1' if boxEsito.get() == "Promosso" else '0'
+
     def center_window(win, width=930, height=478):
         screen_width = win.winfo_screenwidth()
         screen_height = win.winfo_screenheight()
@@ -45,7 +48,7 @@ def create():
 
     def addEsito():
         id = boxID.get()
-        esito = boxEsito.get()
+        esito = get_esito_value()
         data = boxData.get()
         esaminatore = boxEsaminatore.get()
         if not id or not esito or not data or not esaminatore:
@@ -56,18 +59,34 @@ def create():
                 msg.showerror("Error", "Invalid date")
             else:
                 add_esame_pratico(id,esito,data, esaminatore)
+                chiudi_iscirzione_pratico()
+                updateView()
+                boxID.config(state='normal')
+                boxID.delete(0,END)
+                boxID.config(state='readonly')
+                boxEsaminatore.config(state='normal')
+                boxEsaminatore.delete(0,END)
+                boxEsaminatore.config(state='readonly')
+                boxData.delete(0,END)
+                boxEsito.set('')
 
     def on_select_list(event):
-        selected_item = list.selection()[0]
-        item_values = list.item(selected_item, 'values')
-        boxID.delete(0, 'end')
-        boxID.insert(0, item_values[0])
+        selected_item = list.selection()
+        if selected_item:
+            item_values = list.item(selected_item[0], 'values')
+            boxID.config(state='normal')
+            boxID.delete(0, 'end')
+            boxID.insert(0, item_values[0])
+            boxID.config(state='readonly')
 
     def on_select_esmainatori(event):
-        selected_item = esamintoriTree.selection()[0]
-        item_values = esamintoriTree.item(selected_item, 'values')
-        boxEsaminatore.delete(0, 'end')
-        boxEsaminatore.insert(0, item_values[0])
+        selected_item = esamintoriTree.selection()
+        if selected_item:
+            item_values = esamintoriTree.item(selected_item[0], 'values')
+            boxEsaminatore.config(state='normal')
+            boxEsaminatore.delete(0, 'end')
+            boxEsaminatore.insert(0, item_values[0])
+            boxEsaminatore.config(state='readonly')
 
     def viewEsaminatori():
         for esam in get_esaminatori():
@@ -141,34 +160,32 @@ def create():
     list.heading('Cognome', text='Cognome')
 
     addFrame = Frame(window, bg="lightgray")
-    addFrame.place(x=250, y=75, width=200, height=300)
+    addFrame.place(x=250, y=75, width=200, height=275)
 
     lblID = Label(addFrame, text="Seleziona uno studente", font=('times new roman', 15), bg='lightgray')
     lblID.place(x=8, y=2)
-    boxID = Entry(addFrame, font=('times new roman', 12), bg="lightyellow")
-    boxID.grid(row=0, column=1, padx=8, pady=25)
+    boxID = Entry(addFrame, font=('times new roman', 12), state='readonly')
+    boxID.grid(row=0, column=1, pady=25)
 
     lblEsito = Label(addFrame, text="Esito:", font=('times new roman', 15), bg='lightgray')
     lblEsito.place(x=8, y=50)
-    lblInserti = Label(addFrame, text="(1 = promosso, 0 = bocciato)", font=('times new roman', 10), bg='lightgray')
-    lblInserti.place(x=8, y=70)
-    boxEsito = Entry(addFrame, font=('times new roman', 12), bg="lightyellow")
-    boxEsito.grid(row=1, column=1, padx=8, pady=20)
+    boxEsito = ttk.Combobox(addFrame, font=('times new roman', 12), values=["Promosso", "Bocciato"], state="readonly")
+    boxEsito.grid(row=1, column=1, padx=8)
 
     lblEsaminatore = Label(addFrame, text="Seleziona esaminatore", font=('times new roman', 15), bg='lightgray')
-    lblEsaminatore.place(x=8, y=120)
-    boxEsaminatore = Entry(addFrame, font=('times new roman', 12), bg="lightyellow")
-    boxEsaminatore.grid(row=2, column=1, padx=8, pady=10)
+    lblEsaminatore.place(x=8, y=100)
+    boxEsaminatore = Entry(addFrame, font=('times new roman', 12), state='readonly')
+    boxEsaminatore.grid(row=2, column=1, pady=25)
 
     lblData = Label(addFrame, text="Data:", font=('times new roman', 15), bg='lightgray')
-    lblData.place(x=8, y=170)
-    boxData = Entry(addFrame, font=('times new roman', 12), bg="lightyellow", width=12)
-    boxData.grid(row=3, column=1, padx=8, pady=15, sticky='w')
+    lblData.place(x=8, y=150)
+    boxData = Entry(addFrame, font=('times new roman', 12), width=12)
+    boxData.grid(row=3, column=1, padx=8, pady=2,sticky='w')
     calButtonGuida = Button(addFrame, text="Seleziona", command=seleziona_data)
-    calButtonGuida.place(x=120, y=192, height=25)
+    calButtonGuida.place(x=120, y=172, height=25)
 
     btnInvia = Button(addFrame, text="Invio", font=('Arial', 15), command=lambda: addEsito())
-    btnInvia.place(x=50, y=235, width=100)
+    btnInvia.place(x=50, y=215, width=100)
 
     esaminatoriFrame = Frame(window)
     esaminatoriFrame.place(x=500, y=275, width=400, height=185)

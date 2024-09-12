@@ -111,13 +111,13 @@ def create(idStud):
 
 
     def on_select_list(event):
-        selected_items = list.selection()
-        if not selected_items:
-            return
-        selected_item = selected_items[0]
-        item_values = list.item(selected_item, 'values')
-        boxIDRip.delete(0, 'end')
-        boxIDRip.insert(0, item_values[0])
+        selected_item = list.selection()
+        if selected_item:
+            item_values = list.item(selected_item[0], 'values')
+            boxIDRip.config(state='normal')
+            boxIDRip.delete(0, 'end')
+            boxIDRip.insert(0, item_values[0])
+            boxIDRip.config(state='readonly')
 
 
     def riprogramma():
@@ -234,7 +234,7 @@ def create(idStud):
 
     lblIDRip = Label(riprogrammaFrame, text="Guida da riprogrammare:", font=('times new roman', 13), bg="lightgray")
     lblIDRip.place(x=2, y=2)
-    boxIDRip= Entry(riprogrammaFrame, font=('times new roman', 12), width=12)
+    boxIDRip= Entry(riprogrammaFrame, font=('times new roman', 12), width=12, state='readonly')
     boxIDRip.grid(row=0,column=1, pady=2, padx=175)
 
     lblNewData = Label(riprogrammaFrame, text="Nuova data:", font=('times new roman', 13), bg="lightgray")

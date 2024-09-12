@@ -50,12 +50,20 @@ def create():
             msg.showerror("Error", "Fill all attribute")
         else:
             add_esame_teorico(id,errori,data)
+            chiudi_iscirzione_teorico()
+            updateView()
+            boxID.delete(0,END)
+            boxData.delete(0,END)
+            boxErrori.delete(0,END)
 
     def on_select(event):
-        selected_item = list.selection()[0]
-        item_values = list.item(selected_item, 'values')
-        boxID.delete(0, 'end')
-        boxID.insert(0, item_values[0])
+        selected_item = list.selection()
+        if selected_item:
+            item_values = list.item(selected_item[0], 'values')
+            boxID.config(state='normal')
+            boxID.delete(0, 'end')
+            boxID.insert(0, item_values[0])
+            boxID.config(state='readonly')
 
     def seleziona_data():
         def conferma_data():
@@ -130,7 +138,7 @@ def create():
 
     lblID = Label(addFrame, text="Seleziona uno studente", font=('times new roman', 15), bg='lightgray')
     lblID.place(x=8,y=2)
-    boxID = Entry(addFrame, font=('times new roman', 12), bg="lightyellow")
+    boxID = Entry(addFrame, font=('times new roman', 12), bg="lightyellow", state='readonly')
     boxID.grid(row=0,column=1, padx=8, pady=25)
 
     lblNumErrori = Label(addFrame, text="Numero errori:", font=('times new roman', 15), bg='lightgray')

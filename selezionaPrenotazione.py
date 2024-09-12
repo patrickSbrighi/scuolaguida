@@ -45,10 +45,13 @@ def create():
             list.insert('',END,values=stud)
 
     def on_select(event):
-        selected_item = list.selection()[0]
-        item_values = list.item(selected_item, 'values')
-        boxID.delete(0, 'end')
-        boxID.insert(0, item_values[0])
+        selected_item = list.selection()
+        if selected_item:
+            item_values = list.item(selected_item[0], 'values')
+            boxID.config(state='normal')
+            boxID.delete(0, 'end')
+            boxID.insert(0, item_values[0])
+            boxID.config(state='readonly')
 
     window=Tk()
     window.title('Prenotazione')

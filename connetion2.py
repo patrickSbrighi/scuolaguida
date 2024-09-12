@@ -138,15 +138,16 @@ def get_studenti_teorici():
 def add_esame_teorico(ID, errori, data):
     try:
         maxError = 3
-        sql="UPDATE `scuolaguida`.`esamiteorici` SET `data` = %s, `esito` = %s, `numErrori` = %s WHERE (`idStudente` = %s);"
-        if errori <= maxError:
+        sql="UPDATE `scuolaguida`.`esamiteorici` SET `data` = %s, `esito` = %s, `numErrori` = %s WHERE `idEsame` = (SELECT `idEsame` FROM `scuolaguida`.`esamiteorici` WHERE `idStudente` = %s AND `esito` IS NULL OR `esito` = '');"
+        if int(errori) <= maxError:
             mycursor.execute(sql, (data, 1, errori, ID))
             mydb.commit()
         else:
             mycursor.execute(sql, (data, 0, errori, ID))
             mydb.commit()
-    except:
-        msg.showerror('Error', 'Operation failed')
+    except Exception as ex:
+        print(ex)
+        msg.showerror('Error', ex)
 
 def get_studenti_pratici():
      try: 
@@ -269,5 +270,81 @@ def chiudi_pacchetto():
             mycursor.execute(sql, (id,))
             mydb.commit()
     except:
-        msg.showerror('Error', 'Operation failed 1')
+        msg.showerror('Error', 'Operation failed')
 
+def get_iscrizione_scadua_teorico():
+    try:
+        sql = "SELECT idStudente FROM (SELECT I.idStudente, COUNT(idEsame) numeroEsami FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = 0 GROUP BY I.idStudente) bocciato WHERE numeroEsami = 2"
+        mycursor.execute(sql)
+        myresult = mycursor.fetchall()
+        return myresult
+    except:
+        msg.showerror('Error', 'Database is not responding')
+
+def chiudi_iscirzione_teorico():
+    try:
+        id = get_iscrizione_scadua_teorico()
+        if id:
+            id = id[0][0]
+            sql = "UPDATE `scuolaguida`.`iscrizioni` SET `chiusa` = '1' WHERE (`idStudente` = %s);"
+            mycursor.execute(sql, (id,))
+            mydb.commit()
+    except Exception as ex:
+        msg.showerror('Error', ex)
+
+def get_iscrizione_scadua_pratico():
+    try:
+        sql = "SELECT idStudente FROM (SELECT I.idStudente, COUNT(idEsame) numeroEsami FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici E ON (I.idStudente = E.idStudente) WHERE E.esito = 0 GROUP BY I.idStudente) bocciato WHERE numeroEsami = 3"
+        mycursor.execute(sql)
+        myresult = mycursor.fetchall()
+        return myresult
+    except:
+        msg.showerror('Error', 'Database is not responding')
+
+def get_presa_patente():
+    try:
+        sql = "SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici E ON (I.idStudente = E.idStudente) WHERE I.chiusa = 0 AND E.esito = 1"
+        mycursor.execute(sql)
+        myresult = mycursor.fetchall()
+        return myresult
+    except:
+        msg.showerror('Error', 'Database is not responding')
+
+def chiudi_iscirzione_pratico():
+    try:
+        id = get_iscrizione_scadua_pratico()
+        if id:
+            id = id[0][0]
+            sql = "UPDATE `scuolaguida`.`iscrizioni` SET `chiusa` = '1' WHERE (`idStudente` = %s);"
+            mycursor.execute(sql, (id,))
+            mydb.commit()
+        else:
+            id = get_presa_patente()
+            if id:
+                id = id[0][0]
+                sql = "UPDATE `scuolaguida`.`iscrizioni` SET `chiusa` = '1' WHERE (`idStudente` = %s);"
+                mycursor.execute(sql, (id,))
+                mydb.commit()
+    except Exception as ex:
+        msg.showerror('Error', ex)
+
+def add_lezione(data, ora, CFist):
+    try:
+        if isinstance(ora, str):
+            ora = int(ora)
+        ora_formattata = f"{ora:02d}:00:00"
+        sql = "INSERT INTO `scuolaguida`.`lezioni` (`data`, `ora`, `CFIstruttoreTeorico`) VALUES (%s, %s, %s);"
+        mycursor.execute(sql, (data, ora_formattata, CFist))
+        mydb.commit()
+    except Exception as ex:
+        print(ex)
+        msg.showerror('Error', 'Operation failed')
+
+def get_istruttori_teorici():
+    try:
+        sql = "SELECT CFIstruttoreTeorico, nome, cognome FROM scuolaguida.istruttoriteorici;"
+        mycursor.execute(sql)
+        myresult = mycursor.fetchall()
+        return myresult
+    except:
+        msg.showerror('Error', 'Database is not responding')
