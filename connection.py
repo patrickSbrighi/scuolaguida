@@ -40,13 +40,13 @@ def show_Patenti():
 
 #func in iscrizione
 def show_Pratici():
-    sql="SELECT P.CFIstruttorePratico,P.nome, P.cognome, COUNT(idStudente) nStud \
+    sql="SELECT P.CFIstruttorePratico, P.nome, P.cognome, COUNT(idStudente) nStud \
         FROM scuolaguida.iscrizioni I RIGHT JOIN scuolaguida.istruttoripratici P ON (I.CFIstruttorePratico = P.CFIstruttorePratico) \
         GROUP BY CFIstruttorePratico \
         ORDER BY nStud \
         LIMIT 1"
     mycursor.execute(sql)
-    data = mycursor.fetchone()
+    data = mycursor.fetchall()
     return data
 
 #func in iscrizione

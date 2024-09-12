@@ -2,141 +2,167 @@ from tkinter import *
 from tkinter import ttk
 from customtkinter import *
 import connection
+from tkinter import messagebox
 
+def create_acquisti_frame(parent_frame):
+    def clear_frames():
+        # Nasconde tutti i widget quando non necessari
+        listbox.grid_forget()
+        selected_label.grid_forget()
+        pacchetti_label.grid_forget()
+        pacchettichoosen.grid_forget()
+        btnAcquista.grid_forget()
+        for widget in under_frame.winfo_children():
+            widget.grid_forget()
 
-set_appearance_mode("light")  
-set_default_color_theme("blue")
+    def viewStudentTeorico():
+        clear_frames()
+        listbox.grid(row=0, column=0, columnspan=3, padx=20, pady=10, sticky="ew")
 
-def clear_frame(frame):
-    # Cancella tutti i widget figli del frame
-    for widget in frame.winfo_children():
-        widget.destroy()
+        def on_select(event):
+            selected_index = listbox.curselection()
+            if selected_index:
+                selected_item = listbox.get(selected_index)
+                selected_label.configure(text=f"Desidera acquistare un esame per lo studente: {selected_item.split()[1]} {selected_item.split()[2]}")
+                selected_label.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
+                btnAcquista.configure(command=lambda: connection.addAcquisto(selected_item.split()[0], 100))
+                btnAcquista.grid(row=2, column=0, padx=10, pady=10)
+                pacchetti_label.grid_forget()
+                pacchettichoosen.grid_forget()
 
-def viewStudentTeorico():
+        elements = connection.showIscrittiTeorico()
+        listbox.delete(0, END)
+        for element in elements:
+            str_elem = f"{element[0]} {element[1]} {element[2]} {element[3]}"
+            listbox.insert(END, str_elem)
 
-    clear_frame(center_frame)
-    clear_frame(center_frame_top)
+        listbox.bind("<<ListboxSelect>>", on_select)
 
+    def viewStudentPratico():
+        clear_frames()
+        listbox.grid(row=0, column=0, columnspan=3, padx=20, pady=10, sticky="ew")
 
-    def on_select(event):
-    # Ottiene l'indice dell'elemento selezionato
-        selected_index = listbox.curselection()
-        if selected_index:
-            # Prende il valore dell'elemento selezionato
-            selected_item = listbox.get(selected_index)
-            selected = CTkLabel(center_frame, text=f"Desidera acquistare un esame per lo studente: {selected_item.split()[1]} {selected_item.split()[2]}")
-            selected.pack(side=TOP, padx=10, pady=10)
-            btnAcquista = CTkButton(center_frame, text="Acquista", command=connection.addAcquisto(selected_item.split()[0], 100))
-            btnAcquista.pack(side=BOTTOM, padx=10, pady=10)
-    
+        def on_select(event):
+            selected_index = listbox.curselection()
+            if selected_index:
+                selected_item = listbox.get(selected_index)
+                selected_label.configure(text=f"Desidera acquistare un esame per lo studente: {selected_item.split()[1]} {selected_item.split()[2]}")
+                selected_label.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
+                btnAcquista.configure(command=lambda: connection.addAcquisto(selected_item.split()[0], 100))
+                btnAcquista.grid(row=2, column=0, padx=10, pady=10)
+                pacchetti_label.grid_forget()
+                pacchettichoosen.grid_forget()
 
-    listbox.delete(0,END)
+        elements = connection.showIscrittiPratico()
+        listbox.delete(0, END)
+        for element in elements:
+            str_elem = f"{element[0]} {element[1]} {element[2]} numero guide {element[3]}"
+            listbox.insert(END, str_elem)
 
-    elements = connection.showIscrittiTeorico()
+        listbox.bind("<<ListboxSelect>>", on_select)
 
-    for element in elements:
-        str = element[0] + " " + element[1] + " " + element[2] +" " +element[3]
-        listbox.insert(END, str)
+    def viewPacchetti():
+        clear_frames()
+        listbox.grid(row=0, column=0, columnspan=3, padx=20, pady=10, sticky="ew")
+        
+        pacchetti = ['Pacchetto 1 guida', 'Pacchetto 5 guide', 'Pacchetto 10 guide', 'Pacchetto 15 guide']
+        pacchettichoosen['values'] = pacchetti
+        
+        # Nascondi gli elementi che non sono immediatamente necessari
+        selected_label.grid_forget()
+        btnAcquista.grid_forget()
+        pacchetti_label.grid_forget()
+        pacchettichoosen.grid_forget()
 
-    listbox.bind("<<ListboxSelect>>", on_select)
-    
+        # Variabile per tenere traccia della selezione dell'elemento
+        selected_item = [None]
 
-def viewStudentPratico():
+        def on_listbox_select(event):
+            selected_index = listbox.curselection()
+            if selected_index:
+                selected_item[0] = listbox.get(selected_index)
+                selected_label.configure(text=f"Desidera acquistare un pacchetto per lo studente: {selected_item[0].split()[1]} {selected_item[0].split()[2]}")
+                selected_label.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
+                
+                pacchetti_label.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
+                pacchettichoosen.grid(row=1, column=1, sticky="ew")
+                
+                # Assicurati che il pulsante Acquista sia nascosto fino a quando non è selezionato un pacchetto
+                btnAcquista.grid_forget()
 
-    clear_frame(center_frame)
-    clear_frame(center_frame_top)
+        def on_pacchetto_select(event):
+            if selected_item[0]:
+                selected_pacchetto = pacchettichoosen.get()
+                if not selected_pacchetto:
+                    messagebox.showerror("Errore", "Selezionare un pacchetto dalla lista.")
+                    return
+                
+                selected_label.configure(text=f"Desidera acquistare un pacchetto per lo studente: {selected_item[0].split()[1]} {selected_item[0].split()[2]}")
+                btnAcquista.configure(command=lambda: connection.addAcquistoPacchetti(selected_item[0].split()[0], selected_pacchetto.split()[1]))
+                btnAcquista.grid(row=3, column=0, padx=10, pady=10)
+            else:
+                messagebox.showerror("Errore", "Selezionare prima un elemento dalla listbox.")
 
-    def on_select(event):
-    # Ottiene l'indice dell'elemento selezionato
-        selected_index = listbox.curselection()
-        if selected_index:
-            # Prende il valore dell'elemento selezionato
-            selected_item = listbox.get(selected_index)
-            selected= CTkLabel(center_frame, text=f"Desidera acquistare un esame per lo studente: {selected_item.split()[1]} {selected_item.split()[2]}")
-            selected.pack(side=TOP, padx=10, pady=10)
-            btnAcquista = CTkButton(center_frame, text="Acquista", command=connection.addAcquisto(selected_item.split()[0], 100))
-            btnAcquista.pack(side=BOTTOM, padx=10, pady=10)
-    
+        # Configura gli eventi di selezione
+        listbox.bind("<<ListboxSelect>>", on_listbox_select)
+        pacchettichoosen.bind("<<ComboboxSelected>>", on_pacchetto_select)
 
-    listbox.delete(0,END)
-
-    elements = connection.showIscrittiPratico()
-
-    for element in elements:
-        str = f"{element[0]} {element[1]} {element[2]} numero guide {element[3]}"
-        listbox.insert(END, str)
-
-    listbox.bind("<<ListboxSelect>>", on_select)
-    
-def viewPacchetti():
-
-    clear_frame(center_frame)
-    clear_frame(center_frame_top)
-
-    def on_select(event):
-        # Ottiene l'indice dell'elemento selezionato
-        selected_index = listbox.curselection()
-        if selected_index:
-            # Prende il valore dell'elemento selezionato
-            selected_item = listbox.get(selected_index)
-            selected =CTkLabel(center_frame, text=f"Desidera acquistare un pacchetto per lo studente: {selected_item.split()[1]} {selected_item.split()[2]}")
-            selected.pack(side=TOP, padx=10, pady=10)
-            
-            btnAcquista = CTkButton(center_frame, text="Acquista", command=lambda: connection.addAcquistoPacchetti(selected_item.split()[0], pacchettichoosen.get().split()[1]))
-            btnAcquista.pack(side=BOTTOM, padx=10, pady=10)
-    
-
-    listbox.delete(0,END)
-    
-
-    elements = connection.showIscrittiPacchetti()
-
-    for element in elements:
-        str = f"{element[0]} {element[1]} {element[2]} guide mancanti {element[3]}"
-        listbox.insert(END, str)
-
-    CTkLabel(center_frame_top, text="seleziona pacchetto :").pack(side=LEFT, padx=10, pady=10)
-    
-    pacchettichoosen = ttk.Combobox(center_frame_top, width = 20)
-    pacchettichoosen.pack(side=LEFT, padx=10, pady=10)
-
-    pacchetti = ['Pacchetto 1 guida', 'Pacchetto 5 guide', 'Pacchetto 10 guide', 'Pacchetto 15 guide']
-    pacchettichoosen['values'] = pacchetti
-
-    listbox.bind("<<ListboxSelect>>", on_select)
-
-
-
-window = CTk()
-window.title('Acquisti')
-window.geometry('970x478')
-window.resizable(True,True)
-
-window_bg_color = window.cget("fg_color")
-
-topframe = CTkFrame(window,fg_color=window_bg_color)
-topframe.pack(side=TOP, fill=X, padx=20, pady=20)
-
-center_frame = CTkFrame(window, fg_color=window_bg_color)
-center_frame.pack(side=BOTTOM, expand=True)
-
-center_frame_top = CTkFrame(window, fg_color=window_bg_color)
-center_frame_top.pack(side=BOTTOM, expand=True)
-
-label = CTkLabel(topframe, text="Seleziona acquisto")
-label.pack(side=TOP, pady=10)
-
-btnpratico = CTkButton(topframe, text='Esame Pratico',command=viewStudentPratico)
-btnpratico.pack(side=LEFT, padx=10, pady=10, expand=True, fill=BOTH)
-btnteorico = CTkButton(topframe, text='Esame Teorico', command=viewStudentTeorico)
-btnteorico.pack(side=LEFT, padx=10, pady=10, expand=True, fill=BOTH)
-btnpacchetti = CTkButton(topframe, text='Pacchetto guide', command=viewPacchetti)
-btnpacchetti.pack(side=LEFT, padx=10, pady=10, expand=True, fill=BOTH)
-
-
-listbox = Listbox(window, selectmode=SINGLE, width=100, height=20)
-listbox.pack(side=TOP, padx=20, pady=10, expand=True)
+        # Carica gli elementi nella Listbox
+        elements = connection.showIscrittiPacchetti()
+        listbox.delete(0, END)
+        for element in elements:
+            str_elem = f"{element[0]} {element[1]} {element[2]} guide mancanti {element[3]}"
+            listbox.insert(END, str_elem)
 
 
 
-window.mainloop()
+
+    # Crea il frame principale per le acquisizioni
+    acquisti_frame = CTkFrame(parent_frame, corner_radius=15, fg_color=parent_frame.cget("fg_color"))
+    acquisti_frame.grid(row=0, column=0, sticky="nsew")
+
+    # Configura l'espansione del frame principale
+    parent_frame.grid_rowconfigure(0, weight=1)
+    parent_frame.grid_columnconfigure(0, weight=1)
+    acquisti_frame.grid_rowconfigure(1, weight=1)
+    acquisti_frame.grid_columnconfigure(0, weight=1)
+
+    window_bg_color = acquisti_frame.cget("fg_color")
+
+    # Frame per la parte superiore (bottone e label)
+    topframe = CTkFrame(acquisti_frame, fg_color=window_bg_color)
+    topframe.grid(row=0, column=0, sticky="ew", padx=20, pady=20)
+
+    # Frame centrale
+    center_frame = CTkFrame(acquisti_frame, fg_color=window_bg_color)
+    center_frame.grid(row=1, column=0, sticky="ew")
+
+    under_frame = CTkFrame(acquisti_frame, fg_color=window_bg_color)
+    under_frame.grid(row=2, column=0, sticky="ew")
+
+    label = CTkLabel(topframe, text="Seleziona acquisto")
+    label.grid(row=0, column=0, padx=10, pady=10)
+
+    btnpratico = CTkButton(topframe, text='Esame Pratico', command=viewStudentPratico)
+    btnpratico.grid(row=0, column=1, padx=10, pady=10)
+    btnteorico = CTkButton(topframe, text='Esame Teorico', command=viewStudentTeorico)
+    btnteorico.grid(row=0, column=2, padx=10, pady=10)
+    btnpacchetti = CTkButton(topframe, text='Pacchetto guide', command=viewPacchetti)
+    btnpacchetti.grid(row=0, column=3, padx=10, pady=10)
+
+    # Creazione della Listbox e degli altri widget persistenti
+    listbox = Listbox(center_frame, selectmode=SINGLE, width=100, height=20)
+
+    selected_label = CTkLabel(center_frame, text="")
+
+    pacchetti_label = CTkLabel(under_frame, text="Seleziona pacchetto:")
+    pacchettichoosen = ttk.Combobox(under_frame, width=20)
+
+    btnAcquista = CTkButton(under_frame, text="Acquista")
+
+    center_frame.grid_rowconfigure(0, weight=1) 
+    center_frame.grid_columnconfigure(0, weight=1) 
+    under_frame.grid_rowconfigure(0, weight=1)  
+    under_frame.grid_columnconfigure(0, weight=1)
+
+    return acquisti_frame

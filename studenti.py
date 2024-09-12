@@ -3,8 +3,8 @@ from tkinter import ttk
 import tkinter.messagebox as msg
 import connection
 
-def new_window():
-
+def create_student_frame(parent_frame):
+    # Funzione per popolare il treeview con i dati
     def populate_treeview(tree, data):
         for student in tree.get_children():
             tree.delete(student)
@@ -12,7 +12,7 @@ def new_window():
         for row in data:
             tree.insert("", "end", values=row)
 
-
+    # Funzione per aggiungere uno studente
     def add():
         CF = CFEntry.get()
         name = nameEntry.get()
@@ -22,91 +22,101 @@ def new_window():
         date = dateEntry.get()
         
         try:
+            # Prova ad aggiungere lo studente
             connection.addStudent(CF, name, surname, address, phone, date)
+            
+            # Dopo aver aggiunto, svuota i campi di inserimento
+            CFEntry.delete(0, 'end')
+            nameEntry.delete(0, 'end')
+            surnameEntry.delete(0, 'end')
+            addressEntry.delete(0, 'end')
+            phoneEntry.delete(0, 'end')
+            dateEntry.delete(0, 'end')
+        
         except Exception as e:
             msg.showerror("Errore", f"Si è verificato un errore: {str(e)}")
 
-        data=connection.showStudent()
+        # Aggiorna i dati nel treeview
+        data = connection.showStudent()
         populate_treeview(tree, data)
 
+    # Creazione del frame per la gestione studenti
+    student_frame = CTkFrame(parent_frame)
+    student_frame.grid(row=0, column=0, sticky="nsew")
+
+    # Configura il frame per espandersi con il genitore
+    parent_frame.grid_rowconfigure(0, weight=1)
+    parent_frame.grid_columnconfigure(0, weight=1)
+
+    window_bg_color = student_frame.cget("fg_color")
 
 
+    # Layout del frame studente
+    leftFrame = CTkFrame(student_frame, fg_color=window_bg_color)
+    leftFrame.grid(row=0, column=0, sticky="ns", padx=5, pady=5)
 
-    win = CTk()
-    win.geometry('930x478')
-    win.resizable(True,True)
-    win.title('Manage Students')
+    rightData = CTkFrame(student_frame, fg_color=window_bg_color)  # Riduzione della larghezza del frame destro
+    rightData.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
 
-    leftFrame = CTkFrame(win)
-    leftFrame.grid(row = 0, column = 0, sticky="ns")
+    # Configura i frame interni per espandersi
+    student_frame.grid_rowconfigure(0, weight=1)
+    student_frame.grid_columnconfigure(0, weight=0)  # Il frame di sinistra ha una dimensione fissa
+    student_frame.grid_columnconfigure(1, weight=1)  # Il frame di destra si espande
 
-    rightData = CTkFrame(win)
-    rightData.grid(row=0, column=1, sticky="nsew")
+    # Etichette e campi di input
+    labels_entries = {
+        "CF": (0, 0),
+        "Name": (1, 0),
+        "Cognome": (2, 0),
+        "Indirizzo": (3, 0),
+        "Recapito Telefonico": (4, 0),
+        "Data di Nascita": (5, 0)
+    }
 
+    entries = {}
+    for label, (row, col) in labels_entries.items():
+        lbl = CTkLabel(leftFrame, text=label, font=('Arial', 15, 'bold'))  
+        lbl.grid(row=row, column=col, padx=10, pady=5, sticky="w")
+        entry = CTkEntry(leftFrame, width=150) 
+        entry.grid(row=row, column=col+1, pady=5)
+        entries[label] = entry
 
-    CFLable = CTkLabel(leftFrame, text="CF", font=('arial', 15, 'bold'))
-    CFLable.grid(row=0, column=0, padx=20, pady=10)
-    CFEntry = CTkEntry(leftFrame)
-    CFEntry.grid(row=0, column=1, pady=10)
-
-    nameLable = CTkLabel(leftFrame, text="Name", font=('arial', 15, 'bold'))
-    nameLable.grid(row=1, column=0, padx=20, pady=10)
-    nameEntry = CTkEntry(leftFrame)
-    nameEntry.grid(row=1, column=1, pady=10)
-
-    surnameLable = CTkLabel(leftFrame, text="Cognome", font=('arial', 15, 'bold'))
-    surnameLable.grid(row=2, column=0, padx=20, pady=10)
-    surnameEntry = CTkEntry(leftFrame)
-    surnameEntry.grid(row=2, column=1, pady=10)
-
-    addressLable = CTkLabel(leftFrame, text="Indirizzo", font=('arial', 15, 'bold'))
-    addressLable.grid(row=3, column=0, padx=20, pady=10)
-    addressEntry = CTkEntry(leftFrame)
-    addressEntry.grid(row=3, column=1, pady=10)
-
-    phoneLable = CTkLabel(leftFrame, text="Recapito Telefonico", font=('arial', 15, 'bold'))
-    phoneLable.grid(row=4, column=0, padx=20, pady=10)
-    phoneEntry = CTkEntry(leftFrame)
-    phoneEntry.grid(row=4, column=1, pady=10)
-
-    dateLable = CTkLabel(leftFrame, text="Data di Nascita", font=('arial', 15, 'bold'))
-    dateLable.grid(row=5, column=0, padx=20, pady=10)
-    dateEntry = CTkEntry(leftFrame)
-    dateEntry.grid(row=5, column=1, pady=10)
-
+    CFEntry = entries["CF"]
+    nameEntry = entries["Name"]
+    surnameEntry = entries["Cognome"]
+    addressEntry = entries["Indirizzo"]
+    phoneEntry = entries["Recapito Telefonico"]
+    dateEntry = entries["Data di Nascita"]
 
     addbtn = CTkButton(leftFrame, text='Aggiungi', cursor='hand2', command=add)
-    addbtn.grid(row=6, column=0, padx=10, pady=10)
+    addbtn.grid(row=len(labels_entries), column=0, columnspan=2, padx=5, pady=5)
 
+    # Treeview per visualizzare gli studenti
+    tree = ttk.Treeview(rightData, columns=('CF', 'Nome', 'Cognome', 'Indirizzo', 'Recapito Telefonico', 'Data di Nascita'), show='headings', height=8)
 
-    tree = ttk.Treeview(rightData, columns=('CF', 'Nome', 'Cognome', 'Indirizzo', 'Recapito Telefonico', 'Data di Nascita'), show='headings')
-
+    # Definizione delle intestazioni delle colonne con larghezza ridotta
     tree.heading('CF', text='CF', anchor='center')
-    tree.heading('Nome', text='None', anchor='center')
+    tree.heading('Nome', text='Nome', anchor='center')
     tree.heading('Cognome', text='Cognome', anchor='center')
     tree.heading('Indirizzo', text='Indirizzo', anchor='center')
-    tree.heading('Recapito Telefonico', text='Recapito Telefonico', anchor='center')
+    tree.heading('Recapito Telefonico', text='Recapito', anchor='center')
     tree.heading('Data di Nascita', text='Data di Nascita', anchor='center')
 
+    for col in tree["columns"]:
+        tree.column(col, width=50, anchor="w") 
 
-    tree.column('CF', stretch=True, width=100,anchor="w")
-    tree.column('Nome', stretch=True, width=100, anchor="w")
-    tree.column('Cognome', stretch=True, width=100, anchor="w")
-    tree.column('Indirizzo', stretch=True, width=100, anchor="w")
-    tree.column('Recapito Telefonico', stretch=True, width=100, anchor="w")
-    tree.column('Data di Nascita', stretch=True, width=100, anchor="w")
-
+    # Configurazione per riempire lo spazio disponibile
     tree.pack(fill="both", expand=True)
 
-    style=ttk.Style()
-    style.configure("Treeview.Heading", font=('Arial', 10, 'bold'))
+    style = ttk.Style()
+    style.configure("Treeview.Heading", font=('Arial', 9, 'bold'))  # Font leggermente aumentato per le intestazioni
 
-    data=connection.showStudent()
+    # Popola il treeview con i dati iniziali
+    data = connection.showStudent()
     populate_treeview(tree, data)
 
-    #ridimensiona oggetti 
-    win.grid_columnconfigure(1,weight=1)
-    win.grid_rowconfigure(0,weight=1)
+    # Configurazione per l'espansione automatica
     rightData.grid_rowconfigure(0, weight=1)
+    rightData.grid_columnconfigure(0, weight=1)
 
-    win.mainloop()
+    return student_frame
