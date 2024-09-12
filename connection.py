@@ -4,11 +4,20 @@ import tkinter.messagebox as msg
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="",
+    passwd="Monta100!",
     database="scuolaguida"
 )
 
 mycursor = mydb.cursor()
+
+def delete_iscrizioni_scadute():
+    mycursor.execute("SELECT idStudente FROM scuolaguida.iscrizioni WHERE dataInizio <= DATE_SUB(CURDATE(), INTERVAL 1 YEAR) AND chiusa = 'N'")
+    data = mycursor.fetchall()
+
+    for id in list(data):
+        mycursor.execute("UPDATE scuolaguida.iscrizioni SET chiusa = 'I' WHERE (idStudente = %s)", id)
+
+    mydb.commit()
 
 # func in login
 def is_Present(username, password):
@@ -145,6 +154,41 @@ def addAcquisto(CFStudente, importo):
 
     mycursor.execute("insert into scuolaguida.acquisti (costoTotale, idStudente) values (%s, %s)", (importo, idStudente))
     mydb.commit()
+
+def addAcquistoTeorico(CFStudente, importo):
+    try:
+        mycursor.execute("select idStudente from scuolaguida.iscrizioni where CFStudente = %s",(CFStudente,) )
+        idStudente = mycursor.fetchone()[0]
+
+        mycursor.execute("insert into scuolaguida.acquisti (costoTotale, idStudente) values (%s, %s)", (importo, idStudente))
+
+        mycursor.execute("SELECT LAST_INSERT_ID()")
+        idAcquisto = mycursor.fetchone()[0]
+
+        mycursor.execute("insert into scuolaguida.esamiteorici (costo, idStudente, idAcquisto) values (%s, %s, %s)", ('100',idStudente, idAcquisto ))
+
+        mydb.commit() 
+    except mysql.connector.Error as err:
+        print(f"Errore: {err}")
+        mydb.rollback()
+
+def addAcquistoPratico(CFStudente, importo):
+    mycursor.execute("select idStudente from scuolaguida.iscrizioni where CFStudente = %s",(CFStudente,) )
+    idStudente = mycursor.fetchone()[0]
+
+    mycursor.execute("insert into scuolaguida.acquisti (costoTotale, idStudente) values (%s, %s)", (importo, idStudente))
+    mycursor.fetchall()
+
+    mycursor.execute("SELECT LAST_INSERT_ID()")
+    idAcquisto = mycursor.fetchone()[0]
+
+    mycursor.execute("select CFEsaminatore from scuolaguida.esaminatori limit 1")
+    CFEsaminatore = mycursor.fetchone()[0]
+
+    mycursor.execute("insert into scuolaguida.esamipratici (costo, idStudente, CFEsaminatore, idAcquisto) values (%s, %s, %s, %s)", ('100', idStudente, CFEsaminatore, idAcquisto))
+
+
+    mydb.commit() 
 
 def showIscrittiPratico():
     sql="SELECT I.CFStudente, S.nome, S.cognome, COUNT(G.idGuida) guide \

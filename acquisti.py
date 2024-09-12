@@ -25,8 +25,8 @@ def create_acquisti_frame(parent_frame):
                 selected_item = listbox.get(selected_index)
                 selected_label.configure(text=f"Desidera acquistare un esame per lo studente: {selected_item.split()[1]} {selected_item.split()[2]}")
                 selected_label.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
-                btnAcquista.configure(command=lambda: connection.addAcquisto(selected_item.split()[0], 100))
-                btnAcquista.grid(row=2, column=0, padx=10, pady=10)
+                btnAcquista.configure(command=lambda: connection.addAcquistoTeorico(selected_item.split()[0], 100))
+                btnAcquista.grid(row=2, column=0, padx=10, pady=10, columnspan=2)
                 pacchetti_label.grid_forget()
                 pacchettichoosen.grid_forget()
 
@@ -48,8 +48,8 @@ def create_acquisti_frame(parent_frame):
                 selected_item = listbox.get(selected_index)
                 selected_label.configure(text=f"Desidera acquistare un esame per lo studente: {selected_item.split()[1]} {selected_item.split()[2]}")
                 selected_label.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
-                btnAcquista.configure(command=lambda: connection.addAcquisto(selected_item.split()[0], 100))
-                btnAcquista.grid(row=2, column=0, padx=10, pady=10)
+                btnAcquista.configure(command=lambda: connection.addAcquistoPratico(selected_item.split()[0], 100))
+                btnAcquista.grid(row=2, column=0, padx=10, pady=10, columnspan=2)
                 pacchetti_label.grid_forget()
                 pacchettichoosen.grid_forget()
 
@@ -85,7 +85,7 @@ def create_acquisti_frame(parent_frame):
                 selected_label.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
                 
                 pacchetti_label.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
-                pacchettichoosen.grid(row=1, column=1, sticky="ew")
+                pacchettichoosen.grid(row=1, column=1)
                 
                 # Assicurati che il pulsante Acquista sia nascosto fino a quando non è selezionato un pacchetto
                 btnAcquista.grid_forget()
@@ -99,7 +99,7 @@ def create_acquisti_frame(parent_frame):
                 
                 selected_label.configure(text=f"Desidera acquistare un pacchetto per lo studente: {selected_item[0].split()[1]} {selected_item[0].split()[2]}")
                 btnAcquista.configure(command=lambda: connection.addAcquistoPacchetti(selected_item[0].split()[0], selected_pacchetto.split()[1]))
-                btnAcquista.grid(row=3, column=0, padx=10, pady=10)
+                btnAcquista.grid(row=2, column=0, padx=10, pady=10, columnspan=2)
             else:
                 messagebox.showerror("Errore", "Selezionare prima un elemento dalla listbox.")
 
@@ -132,13 +132,23 @@ def create_acquisti_frame(parent_frame):
     # Frame per la parte superiore (bottone e label)
     topframe = CTkFrame(acquisti_frame, fg_color=window_bg_color)
     topframe.grid(row=0, column=0, sticky="ew", padx=20, pady=20)
+    topframe.grid_columnconfigure(0, weight=1)
+    topframe.grid_columnconfigure(1, weight=1)
+    topframe.grid_columnconfigure(2, weight=1)
+    topframe.grid_columnconfigure(3, weight=1)
+
 
     # Frame centrale
     center_frame = CTkFrame(acquisti_frame, fg_color=window_bg_color)
     center_frame.grid(row=1, column=0, sticky="ew")
+    center_frame.grid_rowconfigure(0, weight=1)
+    center_frame.grid_columnconfigure(0, weight=1)
 
     under_frame = CTkFrame(acquisti_frame, fg_color=window_bg_color)
     under_frame.grid(row=2, column=0, sticky="ew")
+
+    under_frame.grid_columnconfigure(0, weight=1)
+    under_frame.grid_columnconfigure(1, weight=1)
 
     label = CTkLabel(topframe, text="Seleziona acquisto")
     label.grid(row=0, column=0, padx=10, pady=10)
@@ -160,9 +170,6 @@ def create_acquisti_frame(parent_frame):
 
     btnAcquista = CTkButton(under_frame, text="Acquista")
 
-    center_frame.grid_rowconfigure(0, weight=1) 
-    center_frame.grid_columnconfigure(0, weight=1) 
-    under_frame.grid_rowconfigure(0, weight=1)  
-    under_frame.grid_columnconfigure(0, weight=1)
+
 
     return acquisti_frame
