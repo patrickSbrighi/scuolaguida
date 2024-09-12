@@ -5,7 +5,7 @@ try:
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",
-        passwd="Monta100!",
+        passwd="",
         database="scuolaguida"
     )
     mycursor = mydb.cursor()
@@ -14,7 +14,7 @@ except:
 
 def get_veicoli():
     try:
-        sql="SELECT targa FROM scuolaguida.veicoli"
+        sql="SELECT targa, modello FROM scuolaguida.veicoli"
         mycursor.execute(sql)
         myresult = mycursor.fetchall()
         return myresult
