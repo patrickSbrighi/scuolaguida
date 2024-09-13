@@ -1,5 +1,5 @@
 from customtkinter import *
-import studenti  # Assicurati che questo modulo esista e sia corretto
+import studenti  
 import iscrizione
 import acquisti
 import connection
@@ -11,19 +11,18 @@ import lezioni
 import statistiche
 import option
 
-def create_menu_window():
+def create_menu_window(parent_frame):
     # Impostazioni del tema e dell'aspetto
     set_appearance_mode("white")  
     set_default_color_theme("blue") 
-
+    parent_frame.grid_rowconfigure(0, weight=1)
+    parent_frame.grid_columnconfigure(0, weight=1)
     
     # Creazione della finestra principale
-    window = CTk()
-    window.title('Menu Principale')
-    window.geometry('930x478')
-    window.resizable(True, True)
+    window_bg_color = parent_frame.cget("fg_color")
 
-    window_bg_color = window.cget("fg_color")
+    window = CTkFrame(parent_frame, fg_color=window_bg_color)
+    window.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
     connection.delete_iscrizioni_scadute()
 
@@ -47,8 +46,7 @@ def create_menu_window():
     titleLabel.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(10, 0))
 
     def logout():
-        window.destroy()
-        login_window = login.create_login_window()  # Crea una nuova finestra di login
+        login_window = login.create_login_window(parent_frame)  # Crea una nuova finestra di login
         login_window.mainloop()
 
     # Bottone Logout posizionato nell'angolo in alto a destra

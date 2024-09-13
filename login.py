@@ -3,23 +3,24 @@ import tkinter.messagebox as msg
 import connection
 import menu
 
-def create_login_window():
+def create_login_window(window):
     def login():
         username = usernameEntry.get()
         password = passwordEntry.get()
         if connection.is_Present(username, password):
-            win.destroy()
-            menu_window = menu.create_menu_window()
+            menu_window = menu.create_menu_window(win)
             menu_window.mainloop()
         else:  
             return msg.showerror("Errore", "Username o password errati.")
-        
 
         
-    win = CTk()
-    win.geometry('930x478')
-    win.resizable(True, True)
-    win.title('login')
+    
+    window.grid_rowconfigure(0, weight=1)
+    window.grid_columnconfigure(0, weight=1)
+
+    
+    win = CTkFrame(window)
+    win.grid(row=0, column=0, sticky="nsew")
 
     lbl = CTkLabel(win, text='Accedi con username and password')
     lbl.place(relx=0.5, rely=0.3, anchor='center')
@@ -28,8 +29,8 @@ def create_login_window():
     passwordEntry = CTkEntry(win, placeholder_text='Password', show='*')
     passwordEntry.place(relx=0.5, rely=0.5, anchor='center')
 
-    loginbtn = CTkButton(win, text='Login', cursor='hand2', command=login)
+    loginbtn = CTkButton(win, text='Login', command=login)
     loginbtn.place(relx=0.5, rely=0.6, anchor='center')
 
-    return win
+    return window
 
