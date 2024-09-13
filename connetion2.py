@@ -128,7 +128,7 @@ def get_tempo_medio_patente():
 
 def get_studenti_teorici():
      try: 
-        sql = "SELECT stu.idStudente, stu.nome, stu.cognome FROM (SELECT I.idStudente, S.nome, S.cognome FROM scuolaguida.iscrizioni I JOIN scuolaguida.studenti S ON (I.CFStudente = S.CFStudente) JOIN scuolaguida.tipologiepatenti T ON (T.idTipologia = I.idTipologia) WHERE S.dataNascita < DATE_SUB(DATE_SUB(DATE_SUB(CURDATE(), INTERVAL T.eta YEAR), INTERVAL 1 MONTH), INTERVAL 1 DAY) AND I.chiusa = 0 AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = 1) ORDER BY I.dataInizio) stu JOIN scuolaguida.acquisti A ON stu.idStudente = A.idStudente JOIN scuolaguida.esamiteorici ES ON A.idAcquisto = ES.idAcquisto WHERE ES.esito IS NULL OR ES.esito = ''"
+        sql = "SELECT DISTINCT stu.idStudente, stu.nome, stu.cognome FROM (SELECT I.idStudente, S.nome, S.cognome FROM scuolaguida.iscrizioni I JOIN scuolaguida.studenti S ON (I.CFStudente = S.CFStudente) JOIN scuolaguida.tipologiepatenti T ON (T.idTipologia = I.idTipologia) WHERE S.dataNascita < DATE_SUB(DATE_SUB(DATE_SUB(CURDATE(), INTERVAL T.eta YEAR), INTERVAL 1 MONTH), INTERVAL 1 DAY) AND I.chiusa = 0 AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = 1) ORDER BY I.dataInizio) stu JOIN scuolaguida.acquisti A ON stu.idStudente = A.idStudente JOIN scuolaguida.esamiteorici ES ON A.idAcquisto = ES.idAcquisto WHERE ES.esito IS NULL OR ES.esito = ''"
         mycursor.execute(sql)
         myresult = mycursor.fetchall()
         return myresult
