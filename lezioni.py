@@ -2,33 +2,9 @@ from tkcalendar import Calendar
 from tkinter import *
 from tkinter import ttk
 from connetion2 import *
-import esamiPratici
-import esamiTeorici
-import option
-import selezionaPrenotazione
-import statistiche
+from customtkinter import *
 
-def create():
-    def openPrenotazione():
-        window.destroy()
-        selezionaPrenotazione.create()
-
-    def openEsamiTeorici():
-        window.destroy()
-        esamiTeorici.create()
-
-    def openEsamiPratici():
-        window.destroy()
-        esamiPratici.create()
-
-    def openStatistiche():
-        window.destroy()
-        statistiche.create()
-
-    def openOption():
-        window.destroy()
-        option.create()
-
+def create_lezioni_frame(parent_Frame):
     def clearTreeview():
         for item in list.get_children():
             list.delete(item)
@@ -46,9 +22,9 @@ def create():
             msg.showerror('Error', 'Fill all attributes')
         else:
             add_lezione(data, ora, cf)
-            boxIstruttore.config(state='normal')
+            boxIstruttore.configure(state='normal')
             boxIstruttore.delete(0, END)
-            boxIstruttore.config(state='readonly')
+            boxIstruttore.configure(state='readonly')
             comboOra.set('')
             boxData.delete(0, END)
 
@@ -57,23 +33,15 @@ def create():
         valori = [i for i in range(9, 19) if i not in (12, 13)]
         comboOra['values'] = valori
 
-    def center_window(win, width=930, height=478):
-        screen_width = win.winfo_screenwidth()
-        screen_height = win.winfo_screenheight()
-        
-        x = (screen_width // 2) - (width // 2)
-        y = (screen_height // 2) - (height // 2)
-        
-        win.geometry(f'{width}x{height}+{x}+{y}')
 
     def on_select_list(event):
         selected_item = list.selection()
         if selected_item:
             item_values = list.item(selected_item[0], 'values')
-            boxIstruttore.config(state='normal')
+            boxIstruttore.configure(state='normal')
             boxIstruttore.delete(0, 'end')
             boxIstruttore.insert(0, item_values[0])
-            boxIstruttore.config(state='readonly')
+            boxIstruttore.configure(state='readonly')
     
     def seleziona_data():
         def conferma_data():
@@ -95,67 +63,39 @@ def create():
         conferma_button = Button(cal_finestra, text="Conferma", command=conferma_data)
         conferma_button.pack(pady=10)
     
-    window=Tk()
-    window.title('Veicoli')
-    window.geometry('930x478')
-    window.resizable(True, True)
+    window_bg_color = parent_Frame.cget("fg_color")
 
-    titleLable=Label(window, text='Scuola guida', font=('Arial', 30, 'bold'), bg='black', fg='white')
-    titleLable.place(x=0, y=0, relwidth=1)
-
-    logoutButton = Button(window, text='Logout', font=('arial', 10, 'bold'), bg='white')
-    logoutButton.place(x=850, y=13)
-
-    leftFrame = Frame(window, bg='lightgray')
-    leftFrame.place(x=0, y=52, width=200, relheight=1)
-
-    iscrizioneButton = Button(leftFrame, text='Iscrizioni', font=('Arial', 15))
-    iscrizioneButton.pack(fill=X)
-
-    acquistiButton = Button(leftFrame, text='Acquisti', font=('Arial', 15))
-    acquistiButton.pack(fill=X)
-
-    prenotazioneButton = Button(leftFrame, text='Prenotazione', font=('Arial', 15), command= lambda:openPrenotazione())
-    prenotazioneButton.pack(fill=X)
-
-    teoriaButton = Button(leftFrame, text='Esami teorici', font=('Arial', 15), command=lambda:openEsamiTeorici())
-    teoriaButton.pack(fill=X)
-
-    praticaButton = Button(leftFrame, text='Esami pratici', font=('Arial', 15), command=lambda:openEsamiPratici())
-    praticaButton.pack(fill=X)
-
-    statisticheButton = Button(leftFrame, text='Statistiche', font=('Arial', 15), command=lambda:openStatistiche())
-    statisticheButton.pack(fill=X)
-
-    impostazioniButton = Button(leftFrame, text='Impostazioni', font=('Arial', 15), command=lambda:openOption())
-    impostazioniButton.pack(fill=X)
+    window = CTkFrame(parent_Frame, bg_color=window_bg_color)
+    window.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
     addFrame = Frame(window, bg="lightgray")
-    addFrame.place(x=250, y=75, width=200, height=215)
+    addFrame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
     lblData = Label(addFrame, text="Inserisci la data", font=('times new roman', 15), bg='lightgray')
-    lblData.place(x=18,y=2)
+    lblData.grid(row=0, column=0, padx=10, pady=10, sticky="w")
     boxData = Entry(addFrame, font=('times new roman', 12), bg="lightyellow", width=10)
-    boxData.place(x=10, y=30)
-    calButton = Button(addFrame, text="Seleziona Data", command=seleziona_data)
-    calButton.place(x=100, y=30, height=25)
+    boxData.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+    calButton = CTkButton(addFrame, text="Seleziona Data", command=seleziona_data)
+    calButton.grid(row=0, column=2, padx=10, pady=10, sticky="w")
+
 
     lblOra = Label(addFrame, text="Orario:", font=('times new roman', 15), bg='lightgray')
-    lblOra.place(x=18,y=55)
+    lblOra.grid(row=1, column=0, padx=10, pady=10, sticky="w")
     comboOra = ttk.Combobox(addFrame, state="readonly", width=10)
-    comboOra.place(x=100, y=60)
+    comboOra.grid(row=1, column=1, padx=10, pady=10, sticky="w")
+
 
     lblEsaminatore = Label(addFrame, text="Seleziona istruttore", font=('times new roman', 15), bg='lightgray')
-    lblEsaminatore.place(x=18, y=90)
+    lblEsaminatore.grid(row=2, column=0, padx=10, pady=10, sticky="w")
     boxIstruttore = Entry(addFrame, font=('times new roman', 12), state='readonly')
-    boxIstruttore.place(x=18,y=115)
+    boxIstruttore.grid(row=2, column=1, padx=10, pady=10, sticky="w")
 
 
-    btnInvia = Button(addFrame, text="Invio", font=('Arial', 15), command=lambda:addLezione())
-    btnInvia.place(x=50, y=155, width=100)
+    btnInvia = CTkButton(addFrame, text="Invio", font=('Arial', 15), command=lambda:addLezione())
+    btnInvia.grid(row=3, column=0, padx=10, pady=10, columnspan=3)
 
     viewFrame = Frame(window)
-    viewFrame.place(x=500, y=75, width=400, height=300)
+    viewFrame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
 
     list = ttk.Treeview(viewFrame, columns=('CF', 'Nome', 'Cognome'), show="headings")
     list.pack(expand=True, fill='both')
@@ -169,9 +109,6 @@ def create():
     updateView()
     riempi_combobox()
 
-    center_window(window)
     list.bind('<<TreeviewSelect>>', on_select_list)
 
-    window.mainloop()
-
-create()
+    return window

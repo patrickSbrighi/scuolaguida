@@ -5,6 +5,11 @@ import acquisti
 import connection
 import login
 import esamiPratici
+import selezionaPrenotazione
+import esamiTeorici
+import lezioni
+import statistiche
+import option
 
 def create_menu_window():
     # Impostazioni del tema e dell'aspetto
@@ -98,6 +103,53 @@ def create_menu_window():
         esamiPratici_frame = esamiPratici.create_esamipratici_frame(rightFrame)
         esamiPratici_frame.grid(row=0, column=0, sticky="nsew")
 
+    def show_prenotazione_frame():
+        # Cancella eventuali frame esistenti nel rightFrame
+        for widget in rightFrame.winfo_children():
+            widget.destroy()
+        
+        # Crea e visualizza il frame degli studenti
+        prenotazione_frame = selezionaPrenotazione.create_seleziona_studente(rightFrame)
+        prenotazione_frame.grid(row=0, column=0, sticky="nsew")
+
+    def show_esamiteorici_frame():
+        # Cancella eventuali frame esistenti nel rightFrame
+        for widget in rightFrame.winfo_children():
+            widget.destroy()
+        
+        # Crea e visualizza il frame degli studenti
+        esamiTeorici_frame = esamiTeorici.create_esamiteorici_frame(rightFrame)
+        esamiTeorici_frame.grid(row=0, column=0, sticky="nsew")
+
+
+    def show_lezioni_frame():
+        # Cancella eventuali frame esistenti nel rightFrame
+        for widget in rightFrame.winfo_children():
+            widget.destroy()
+        
+        # Crea e visualizza il frame degli studenti
+        lezioni_frame = lezioni.create_lezioni_frame(rightFrame)
+        lezioni_frame.grid(row=0, column=0, sticky="nsew")
+
+
+    def show_statistiche_frame():
+        # Cancella eventuali frame esistenti nel rightFrame
+        for widget in rightFrame.winfo_children():
+            widget.destroy()
+        
+        # Crea e visualizza il frame degli studenti
+        lezioni_frame = statistiche.create_statistiche_frame(rightFrame)
+        lezioni_frame.grid(row=0, column=0, sticky="nsew")
+
+    def show_impostazioni_frame():
+        # Cancella eventuali frame esistenti nel rightFrame
+        for widget in rightFrame.winfo_children():
+            widget.destroy()
+        
+        # Crea e visualizza il frame degli studenti
+        impostazioni_frame = option.create_impostazioni_frame(rightFrame)
+        impostazioni_frame.grid(row=0, column=0, sticky="nsew")
+
 
     # Etichetta del Menu
     menuLabel = CTkLabel(leftFrame, text='Menu', font=('Arial', 15))
@@ -113,23 +165,23 @@ def create_menu_window():
     salesButton = CTkButton(leftFrame, text='Acquisti', font=('Arial', 15), command=show_acquisti_frame)
     salesButton.grid(row=3, column=0, sticky="ew", padx=10, pady=5)
 
-    prenotazioneButton = CTkButton(leftFrame, text='Prenotazioni', font=('Arial', 15))
+    prenotazioneButton = CTkButton(leftFrame, text='Prenotazioni', font=('Arial', 15), command=show_prenotazione_frame)
     prenotazioneButton.grid(row=4, column=0, sticky="ew", padx=10, pady=5)
 
-    teoriaButton = CTkButton(leftFrame, text='Esami teorici', font=('Arial', 15))
+    teoriaButton = CTkButton(leftFrame, text='Esami teorici', font=('Arial', 15), command=show_esamiteorici_frame)
     teoriaButton.grid(row=5, column=0, sticky="ew", padx=10, pady=5)
 
-    praticaButton = CTkButton(leftFrame, text='Esami pratici', font=('Arial', 15))
+    praticaButton = CTkButton(leftFrame, text='Esami pratici', font=('Arial', 15), command=show_esamipratici_frame)
     praticaButton.grid(row=6, column=0, sticky="ew", padx=10, pady=5)
 
-    lezioniButton = CTkButton(leftFrame, text='Lezioni', font=('Arial', 15))
+    lezioniButton = CTkButton(leftFrame, text='Lezioni', font=('Arial', 15), command=show_lezioni_frame)
     lezioniButton.grid(row=7, column=0, sticky="ew", padx=10, pady=5)
 
-    statisticheButton = CTkButton(leftFrame, text='Statistiche', font=('Arial', 15))
+    statisticheButton = CTkButton(leftFrame, text='Statistiche', font=('Arial', 15), command=show_statistiche_frame)
     statisticheButton.grid(row=8, column=0, sticky="ew", padx=10, pady=5)
 
-    impostazioniButton = CTkButton(leftFrame, text='Impostazioni', font=('Arial', 15))
+    impostazioniButton = CTkButton(leftFrame, text='Impostazioni', font=('Arial', 15), command=show_impostazioni_frame)
     impostazioniButton.grid(row=9, column=0, sticky="ew", padx=10, pady=5)
 
-    # Loop principale dell'applicazione
+    
     return window
