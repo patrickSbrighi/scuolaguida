@@ -4,6 +4,7 @@ import iscrizione
 import acquisti
 import connection
 import login
+import esamiPratici
 
 def create_menu_window():
     # Impostazioni del tema e dell'aspetto
@@ -41,7 +42,7 @@ def create_menu_window():
     titleLabel.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(10, 0))
 
     def logout():
-        window.withdraw()
+        window.destroy()
         login_window = login.create_login_window()  # Crea una nuova finestra di login
         login_window.mainloop()
 
@@ -88,6 +89,15 @@ def create_menu_window():
         student_frame = acquisti.create_acquisti_frame(rightFrame)
         student_frame.grid(row=0, column=0, sticky="nsew")
 
+    def show_esamipratici_frame():
+        # Cancella eventuali frame esistenti nel rightFrame
+        for widget in rightFrame.winfo_children():
+            widget.destroy()
+        
+        # Crea e visualizza il frame degli studenti
+        esamiPratici_frame = esamiPratici.create_esamipratici_frame(rightFrame)
+        esamiPratici_frame.grid(row=0, column=0, sticky="nsew")
+
 
     # Etichetta del Menu
     menuLabel = CTkLabel(leftFrame, text='Menu', font=('Arial', 15))
@@ -112,7 +122,7 @@ def create_menu_window():
     teoriaButton = CTkButton(leftFrame, text='Esami teorici', font=('Arial', 15))
     teoriaButton.grid(row=6, column=0, sticky="ew", padx=10, pady=5)
 
-    praticaButton = CTkButton(leftFrame, text='Esami pratici', font=('Arial', 15))
+    praticaButton = CTkButton(leftFrame, text='Esami pratici', font=('Arial', 15), command=show_esamipratici_frame)
     praticaButton.grid(row=7, column=0, sticky="ew", padx=10, pady=5)
 
     # Loop principale dell'applicazione
