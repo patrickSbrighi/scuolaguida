@@ -11,8 +11,6 @@ def create_login_window():
             win.destroy()
             menu_window = menu.create_menu_window()
             menu_window.mainloop()
-            
-
         else:  
             return msg.showerror("Errore", "Username o password errati.")
         
@@ -25,9 +23,9 @@ def create_login_window():
 
     lbl = CTkLabel(win, text='Accedi con username and password')
     lbl.place(relx=0.5, rely=0.3, anchor='center')
-    usernameEntry = CTkEntry(win, placeholder_text='Enter with your username')
+    usernameEntry = CTkEntry(win, placeholder_text='Username')
     usernameEntry.place(relx=0.5, rely=0.4, anchor='center')
-    passwordEntry = CTkEntry(win, placeholder_text='Enter with your password', show='*')
+    passwordEntry = CTkEntry(win, placeholder_text='Password', show='*')
     passwordEntry.place(relx=0.5, rely=0.5, anchor='center')
 
     loginbtn = CTkButton(win, text='Login', cursor='hand2', command=login)

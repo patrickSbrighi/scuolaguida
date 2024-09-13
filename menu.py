@@ -55,7 +55,7 @@ def create_menu_window():
     leftFrame.grid(row=1, column=0, sticky="ns", padx=(10, 0), pady=(10, 10))
 
     # Configurazione dell'espansione per il frame sinistro
-    leftFrame.grid_rowconfigure((0, 1, 2, 3, 4, 5, 6, 7), weight=1)
+    leftFrame.grid_rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9), weight=1)
 
     # Frame destro per visualizzare i contenuti
     rightFrame = CTkFrame(main_frame)
@@ -110,20 +110,26 @@ def create_menu_window():
     iscrizioneButton = CTkButton(leftFrame, text='Iscrizioni', font=('Arial', 15), command=show_iscrizioni_frame)
     iscrizioneButton.grid(row=2, column=0, sticky="ew", padx=10, pady=5)
 
-    istruttoreButton = CTkButton(leftFrame, text='Istruttori', font=('Arial', 15))
-    istruttoreButton.grid(row=3, column=0, sticky="ew", padx=10, pady=5)
-
     salesButton = CTkButton(leftFrame, text='Acquisti', font=('Arial', 15), command=show_acquisti_frame)
-    salesButton.grid(row=4, column=0, sticky="ew", padx=10, pady=5)
+    salesButton.grid(row=3, column=0, sticky="ew", padx=10, pady=5)
 
-    pacchettiButton = CTkButton(leftFrame, text='Pacchetti', font=('Arial', 15))
-    pacchettiButton.grid(row=5, column=0, sticky="ew", padx=10, pady=5)
+    prenotazioneButton = CTkButton(leftFrame, text='Prenotazioni', font=('Arial', 15))
+    prenotazioneButton.grid(row=4, column=0, sticky="ew", padx=10, pady=5)
 
     teoriaButton = CTkButton(leftFrame, text='Esami teorici', font=('Arial', 15))
-    teoriaButton.grid(row=6, column=0, sticky="ew", padx=10, pady=5)
+    teoriaButton.grid(row=5, column=0, sticky="ew", padx=10, pady=5)
 
-    praticaButton = CTkButton(leftFrame, text='Esami pratici', font=('Arial', 15), command=show_esamipratici_frame)
-    praticaButton.grid(row=7, column=0, sticky="ew", padx=10, pady=5)
+    praticaButton = CTkButton(leftFrame, text='Esami pratici', font=('Arial', 15))
+    praticaButton.grid(row=6, column=0, sticky="ew", padx=10, pady=5)
+
+    lezioniButton = CTkButton(leftFrame, text='Lezioni', font=('Arial', 15))
+    lezioniButton.grid(row=7, column=0, sticky="ew", padx=10, pady=5)
+
+    statisticheButton = CTkButton(leftFrame, text='Statistiche', font=('Arial', 15))
+    statisticheButton.grid(row=8, column=0, sticky="ew", padx=10, pady=5)
+
+    impostazioniButton = CTkButton(leftFrame, text='Impostazioni', font=('Arial', 15))
+    impostazioniButton.grid(row=9, column=0, sticky="ew", padx=10, pady=5)
 
     # Loop principale dell'applicazione
     return window
