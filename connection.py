@@ -153,6 +153,11 @@ def addAcquisto(CFStudente, importo):
     idStudente = mycursor.fetchone()[0]
 
     mycursor.execute("insert into scuolaguida.acquisti (costoTotale, idStudente) values (%s, %s)", (importo, idStudente))
+    mycursor.execute("SELECT LAST_INSERT_ID()")
+    idAcquisto = mycursor.fetchone()[0]
+    importoNetto = importo - (importo*22)/100
+
+    mycursor.execute("insert into scuolaguida.fatture (importoLordo, IVA, importoNetto, idAcquisto) values (%s, %s, %s, %s)", (importo, '22', importoNetto, idAcquisto))
     mydb.commit()
 
 def addAcquistoTeorico(CFStudente, importo):
@@ -165,8 +170,11 @@ def addAcquistoTeorico(CFStudente, importo):
         mycursor.execute("SELECT LAST_INSERT_ID()")
         idAcquisto = mycursor.fetchone()[0]
 
-        mycursor.execute("insert into scuolaguida.esamiteorici (costo, idStudente, idAcquisto) values (%s, %s, %s)", ('100',idStudente, idAcquisto ))
+        mycursor.execute("insert into scuolaguida.esamiteorici (costo, idStudente, idAcquisto) values (%s, %s, %s)", (importo, idStudente, idAcquisto ))
 
+        importoNetto = importo - (importo*22)/100
+
+        mycursor.execute("insert into scuolaguida.fatture (importoLordo, IVA, importoNetto, idAcquisto) values (%s, %s, %s, %s)", (importo, '22', importoNetto, idAcquisto))
         mydb.commit() 
     except mysql.connector.Error as err:
         print(f"Errore: {err}")
@@ -186,7 +194,9 @@ def addAcquistoPratico(CFStudente, importo):
     CFEsaminatore = mycursor.fetchone()[0]
 
     mycursor.execute("insert into scuolaguida.esamipratici (costo, idStudente, CFEsaminatore, idAcquisto) values (%s, %s, %s, %s)", ('100', idStudente, CFEsaminatore, idAcquisto))
+    importoNetto = importo - (importo*22)/100
 
+    mycursor.execute("insert into scuolaguida.fatture (importoLordo, IVA, importoNetto, idAcquisto) values (%s, %s, %s, %s)", (importo, '22', importoNetto, idAcquisto))
 
     mydb.commit() 
 
