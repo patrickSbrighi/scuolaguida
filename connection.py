@@ -4,7 +4,7 @@ import tkinter.messagebox as msg
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="",
+    passwd="Monta100!",
     database="scuolaguida"
 )
 
@@ -146,24 +146,23 @@ def showIscritti():
 #func in iscrizione
 def showGuideMancanti(CFStudente):
     try:
-        sql = "SELECT distinct (p.tipo - count(g.idGuida)) mancanti \
-        from scuolaguida.pacchetti p join scuolaguida.guide g on (p.idPacchetto = g.idPacchetto)\
-        where p.idPacchetto in\
-        (SELECT distinct P.idPacchetto\
-        FROM scuolaGuida.iscrizioni I JOIN scuolaguida.acquisti A ON (I.idStudente = A.idStudente) \
-        JOIN scuolaguida.pacchetti P ON (P.idAcquisto = A.idAcquisto) \
-        JOIN scuolaguida.guide G ON (G.idPacchetto = P.idPacchetto) \
-        WHERE finito = 0 AND I.CFStudente = %s)\
-        group by p.tipo;"
-        mycursor.execute(sql, (CFStudente,) )
+        mycursor.execute("select idStudente from iscrizioni where CFStudente = %s", (CFStudente,))
+        idStudente = mycursor.fetchone()[0]
+        
+
+        sql = "SELECT (12 - count(g.idGuida)) mancanti \
+            from scuolaguida.guide g join scuolaguida.pacchetti p on (g.idPacchetto = p.idPacchetto)\
+            join scuolaguida.acquisti a on (p.idAcquisto = a.idAcquisto)\
+            join scuolaguida.iscrizioni i on (a.idStudente = i.idStudente)\
+            where i.chiusa = 0 and i.idStudente = %s"
+        mycursor.execute(sql, (idStudente,) )
         data = mycursor.fetchone()
+        print(data)
 
-        if data is None:
-            return None
-        elif data[0]==0:
-            sql = "" #TODO
-
-        return data[0]
+        if data[0] < 0:
+            return 0
+        else: 
+            return data[0]
     except Exception as ex:
         msg.showerror('Error', ex)
 
@@ -382,12 +381,19 @@ def get_studenti_teorici():
 def add_esame_teorico(ID, errori, data):
     try:
         maxError = 3
-        sql="UPDATE `scuolaguida`.`esamiteorici` SET `data` = %s, `esito` = %s, `numErrori` = %s WHERE `idEsame` = (SELECT `idEsame` FROM `scuolaguida`.`esamiteorici` WHERE `idStudente` = %s AND `esito` IS NULL OR `esito` = '');"
+        sql = "UPDATE `scuolaguida`.`esamiteorici` AS e\
+            JOIN (SELECT `idEsame` \
+                FROM `scuolaguida`.`esamiteorici` \
+                WHERE `idStudente` = %s AND (`esito` IS NULL OR `esito` = '')) AS subquery \
+            ON e.idEsame = subquery.idEsame\
+            SET e.data = %s, e.esito = %s, e.numErrori = %s;"
+        print(data)
+
         if int(errori) <= maxError:
-            mycursor.execute(sql, (data, 1, errori, ID))
+            mycursor.execute(sql, (ID, data, 1, errori))
             mydb.commit()
         else:
-            mycursor.execute(sql, (data, 0, errori, ID))
+            mycursor.execute(sql, (ID, data, 0, errori))
             mydb.commit()
     except Exception as ex:
         print(ex)

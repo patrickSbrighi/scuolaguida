@@ -13,8 +13,6 @@ def create_iscrizioni_frame(parent_frame):
             count_guide = connection.showGuideMancanti(selected_item.split()[0])
             if count_guide is not None:
                 label.configure(text=f"Guide mancanti: {count_guide}")
-            else:
-                label.configure(text="Nessuna guida acquistata")
 
     def updatedView():
         listbox.delete(0, tk.END)
