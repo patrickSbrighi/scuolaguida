@@ -5,6 +5,9 @@ import tkinter as tk
 import connection
 
 def create_iscrizioni_frame(parent_frame):
+    def studSceglibili():
+        string = [f"{student[2]} {student[1]} {student[0]}" for student in connection.showNonIscritti()]
+        studentchoosen['values'] = string
     # Funzione per gestire la selezione della listbox
     def on_select(event):
         selected_index = listbox.curselection()
@@ -37,11 +40,14 @@ def create_iscrizioni_frame(parent_frame):
             tk.messagebox.showerror("Errore", "Fill all attributes")
         else:
             try:
-                print(costoSel)
-                print(date)
-                print(iva)
                 connection.addIscrizione(CFStudente, CFTeorico, CFPratico, date, tipo, costoSel, iva)
                 updatedView()
+                studentchoosen.delete(0, END)
+                tipochoosen.delete(0, END)
+                costiChoosen.delete(0, END)
+                teoricochoosen.delete(0, END)
+                praticochoosen.delete(0, END)
+                studSceglibili()
             except Exception as e:
                 tk.messagebox.showerror("Errore", f"Si è verificato un errore: {str(e)}")
 
@@ -74,8 +80,7 @@ def create_iscrizioni_frame(parent_frame):
     studentchoosen = ttk.Combobox(leftFrame, width=combobox_width, font=("arial", 10))
     studentchoosen.grid(column=1, row=1, padx=5, pady=10, sticky='w')
 
-    string = [f"{student[2]} {student[1]} {student[0]}" for student in connection.showStudent()]
-    studentchoosen['values'] = string
+    studSceglibili()
 
     CTkLabel(leftFrame, text="Tipologia patente:", font=font_style).grid(column=0, row=2, padx=5, pady=10, sticky="w")
 

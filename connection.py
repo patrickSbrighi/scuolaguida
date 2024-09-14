@@ -4,7 +4,7 @@ import tkinter.messagebox as msg
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="Monta100!",
+    passwd="",
     database="scuolaguida"
 )
 
@@ -46,6 +46,15 @@ def addStudent(CF, name, surname, address, phone, data):
 def showStudent():
     try:
         sql="SELECT CFStudente, nome, cognome, indirizzo, recapito, dataNascita FROM studenti"
+        mycursor.execute(sql)
+        data = mycursor.fetchall()
+        return list(data)
+    except Exception as ex:
+        msg.showerror('Error', ex)
+
+def showNonIscritti():
+    try:
+        sql="SELECT CFStudente, nome, cognome, indirizzo, recapito, dataNascita FROM scuolaguida.studenti WHERE CFStudente NOT IN (SELECT CFStudente FROM scuolaguida.iscrizioni WHERE chiusa = 0)"
         mycursor.execute(sql)
         data = mycursor.fetchall()
         return list(data)
@@ -157,8 +166,6 @@ def showGuideMancanti(CFStudente):
             where i.chiusa = 0 and i.idStudente = %s"
         mycursor.execute(sql, (idStudente,) )
         data = mycursor.fetchone()
-        print(data)
-
         if data[0] < 0:
             return 0
         else: 
@@ -225,7 +232,7 @@ def showIscrittiPacchetti():
 
 def addAcquistoPacchetti(CFStudente, tipo):
     try:
-        mycursor.execute("select idStudente from scuolaguida.iscrizioni where CFStudente = %s",(CFStudente,) )
+        mycursor.execute("select idStudente from scuolaguida.iscrizioni where CFStudente = %s ORDER BY idStudente DESC LIMIT 1",(CFStudente,) )
         idStudente = mycursor.fetchone()[0]
 
         iva = 22
@@ -238,7 +245,6 @@ def addAcquistoPacchetti(CFStudente, tipo):
         elif tipo=='15':
             importo='650'
         else:
-            print("tipo non disponibile")
             return
         
 
@@ -387,7 +393,6 @@ def add_esame_teorico(ID, errori, data):
                 WHERE `idStudente` = %s AND (`esito` IS NULL OR `esito` = '')) AS subquery \
             ON e.idEsame = subquery.idEsame\
             SET e.data = %s, e.esito = %s, e.numErrori = %s;"
-        print(data)
 
         if int(errori) <= maxError:
             mycursor.execute(sql, (ID, data, 1, errori))
@@ -396,7 +401,6 @@ def add_esame_teorico(ID, errori, data):
             mycursor.execute(sql, (ID, data, 0, errori))
             mydb.commit()
     except Exception as ex:
-        print(ex)
         msg.showerror('Error', ex)
 
 def get_studenti_pratici():
@@ -410,7 +414,7 @@ def get_studenti_pratici():
 
 def add_esame_pratico(ID, esito, data, esaminatore):
     try:
-        sql="UPDATE `scuolaguida`.`esamipratici` SET `data` = %s, `esito` = %s, `CFEsaminatore` = %s WHERE (`idStudente` = %s);"
+        sql="UPDATE `scuolaguida`.`esamipratici` SET `data` = %s, `esito` = %s, `CFEsaminatore` = %s WHERE (`idStudente` = %s) AND (esito IS NULL OR esito ='');"
         mycursor.execute(sql, (data, esito, esaminatore, ID))
         mydb.commit()
     except:
@@ -568,13 +572,12 @@ def chiudi_iscirzione_pratico():
             sql = "UPDATE `scuolaguida`.`iscrizioni` SET `chiusa` = '1' WHERE (`idStudente` = %s);"
             mycursor.execute(sql, (id,))
             mydb.commit()
-        else:
-            id = get_presa_patente()
-            if id:
-                id = id[0][0]
-                sql = "UPDATE `scuolaguida`.`iscrizioni` SET `chiusa` = '1' WHERE (`idStudente` = %s);"
-                mycursor.execute(sql, (id,))
-                mydb.commit()
+        id = get_presa_patente()
+        if id:
+            id = id[0][0]
+            sql = "UPDATE `scuolaguida`.`iscrizioni` SET `chiusa` = '1' WHERE (`idStudente` = %s);"
+            mycursor.execute(sql, (id,))
+            mydb.commit()
     except Exception as ex:
         msg.showerror('Error', ex)
 
@@ -587,7 +590,6 @@ def add_lezione(data, ora, CFist):
         mycursor.execute(sql, (data, ora_formattata, CFist))
         mydb.commit()
     except Exception as ex:
-        print(ex)
         msg.showerror('Error', 'Operation failed')
 
 def get_istruttori_teorici():
