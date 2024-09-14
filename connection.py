@@ -17,8 +17,8 @@ def delete_iscrizioni_scadute():
 
         for id in list(data):
             mycursor.execute("UPDATE scuolaguida.iscrizioni SET chiusa = '1' WHERE (idStudente = %s)", id)
+            mydb.commit()
 
-        mydb.commit()
     except Exception as ex:
         msg.showerror('Error', ex)
 
@@ -121,6 +121,7 @@ def add_iscrizione(CFStudente, CFTeorico, CFPratico, data, tipo, costo, iva):
             "INSERT INTO scuolaguida.iscrizioni (dataInizio, CFStudente, idTipologia, costo, chiusa, CFIstruttoreTeorico, CFIstruttorePratico) VALUES (%s, %s, %s, %s, %s, %s, %s)",
             (data, CFStudente, idTipologia, costo, 0, CFTeorico, CFPratico)
         )
+        mydb.commit()
         
         mycursor.execute("SELECT LAST_INSERT_ID()")
         idStudente = mycursor.fetchone()[0] 
@@ -184,6 +185,7 @@ def addAcquisto(CFStudente, importo):
         idStudente = mycursor.fetchone()[0]
 
         mycursor.execute("insert into scuolaguida.acquisti (costoTotale, idStudente) values (%s, %s)", (importo, idStudente))
+        mydb.commit()
         mycursor.execute("SELECT LAST_INSERT_ID()")
         idAcquisto = mycursor.fetchone()[0]
         importoNetto = importo - (importo*22)/100
@@ -196,12 +198,12 @@ def addAcquisto(CFStudente, importo):
 def addAcquistoTeorico(IDStudente, importo):
     try:
         mycursor.execute("insert into scuolaguida.acquisti (costoTotale, idStudente) values (%s, %s)", (importo, IDStudente))
-
+        mydb.commit()
         mycursor.execute("SELECT LAST_INSERT_ID()")
         idAcquisto = mycursor.fetchone()[0]
 
         mycursor.execute("insert into scuolaguida.esamiteorici (costo, idStudente, idAcquisto) values (%s, %s, %s)", (importo, IDStudente, idAcquisto ))
-
+        mydb.commit()
         importoNetto = importo - (importo*22)/100
 
         mycursor.execute("insert into scuolaguida.fatture (importoLordo, IVA, importoNetto, idAcquisto) values (%s, %s, %s, %s)", (importo, '22', importoNetto, idAcquisto))
@@ -213,11 +215,13 @@ def addAcquistoTeorico(IDStudente, importo):
 def addAcquistoPratico(idStudente, importo):
     try:
         mycursor.execute("insert into scuolaguida.acquisti (costoTotale, idStudente) values (%s, %s)", (importo, idStudente))
+        mydb.commit()
         mycursor.execute("SELECT LAST_INSERT_ID()")
         idAcquisto = mycursor.fetchone()[0]
         mycursor.execute("select CFEsaminatore from scuolaguida.esaminatori limit 1")
         CFEsaminatore = mycursor.fetchone()[0]
         mycursor.execute("insert into scuolaguida.esamipratici (costo, idStudente, CFEsaminatore, idAcquisto) values (%s, %s, %s, %s)", ('100', idStudente, CFEsaminatore, idAcquisto))
+        mydb.commit()
         importoNetto = importo - (importo*22)/100
         mycursor.execute("insert into scuolaguida.fatture (importoLordo, IVA, importoNetto, idAcquisto) values (%s, %s, %s, %s)", (importo, '22', importoNetto, idAcquisto))
         mydb.commit() 
@@ -235,9 +239,11 @@ def showIscrittiPratico():
 
 def showIscrittiPacchetti():
     try:
-        sql = "SELECT S.CFStudente, S.nome, S.cognome FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) JOIN scuolaguida.studenti S ON (S.CFStudente = I.CFStudente) WHERE I.chiusa = '0' AND I.idStudente IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = '1') AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici E ON (I.idStudente = E.idStudente) WHERE E.esito = '1') GROUP BY I.idStudente ORDER BY I.dataInizio"
+        sql = "SELECT S.CFStudente, S.nome, S.cognome FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) JOIN scuolaguida.studenti S ON (S.CFStudente = I.CFStudente) WHERE I.chiusa = '0' AND I.idStudente IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = '1') AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici E ON (I.idStudente = E.idStudente) WHERE E.esito = '1')  AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.pacchetti P JOIN scuolaguida.acquisti A ON P.idAcquisto = A.idAcquisto JOIN scuolaguida.iscrizioni I ON A.idStudente = I.idStudente WHERE P.finito = 0) GROUP BY I.idStudente ORDER BY I.dataInizio"
         mycursor.execute(sql)
         data = mycursor.fetchall()
+        print(data)
+        print(list(data))
         return list(data)
     except Exception as ex:
         msg.showerror('Error', ex)
@@ -264,11 +270,12 @@ def addAcquistoPacchetti(CFStudente, tipo):
 
         sql = "insert into scuolaguida.acquisti (costoTotale, idStudente) values (%s, %s)"
         mycursor.execute(sql, (int(importo), idStudente))
-
+        mydb.commit()
         mycursor.execute("SELECT LAST_INSERT_ID()")
         idAcquisto = mycursor.fetchone()[0]
 
         mycursor.execute("insert into scuolaguida.pacchetti (prezzo, tipo, finito, idAcquisto) values (%s, %s, %s, %s)", (importo, tipo, 0, idAcquisto))
+        mydb.commit()
         add_fattura(int(importo), iva, int(importo) - (int(importo)*iva/100), idAcquisto)
         mydb.commit()
     except Exception as ex:
