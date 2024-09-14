@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-from connetion2 import *
+from connection import *
 import prenotazioneStudente
 from customtkinter import *
 

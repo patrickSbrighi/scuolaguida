@@ -25,6 +25,7 @@ def create_iscrizioni_frame(parent_frame):
 
     # Funzione per aggiungere l'iscrizione
     def add_iscrizione():
+        iva = 22
         try:
             CFStudente = studentchoosen.get().split()[2]
             CFTeorico = teoricochoosen.get().split()[2]
@@ -33,13 +34,15 @@ def create_iscrizioni_frame(parent_frame):
             tipo = tipochoosen.get()
         except:
             tk.messagebox.showerror("Errore", "Fill all attributes")
-        iva = 22
 
         if not CFStudente or not CFTeorico or not CFPratico or not date or not tipo or not costoSel or not iva:
             tk.messagebox.showerror("Errore", "Fill all attributes")
         else:
             try:
-                connection.add_iscrizione(CFStudente, CFTeorico, CFPratico, date, tipo, costoSel, iva)
+                print(costoSel)
+                print(date)
+                print(iva)
+                connection.addIscrizione(CFStudente, CFTeorico, CFPratico, date, tipo, costoSel, iva)
                 updatedView()
             except Exception as e:
                 tk.messagebox.showerror("Errore", f"Si è verificato un errore: {str(e)}")
@@ -81,7 +84,7 @@ def create_iscrizioni_frame(parent_frame):
     tipochoosen = ttk.Combobox(leftFrame, width=combobox_width, font=("arial", 10))
     tipochoosen.grid(column=1, row=2, padx=5, pady=10, sticky="w")
 
-    patenti = connection.show_Patenti()
+    patenti = connection.showPatenti()
     tipo_values = [p[0] for p in patenti]
     tipochoosen['values'] = tipo_values
 
@@ -103,7 +106,7 @@ def create_iscrizioni_frame(parent_frame):
     teoricochoosen = ttk.Combobox(leftFrame, width=combobox_width, font=("arial", 10))
     teoricochoosen.grid(column=1, row=5, padx=5, pady=10, sticky="w")
 
-    teorici = connection.show_Teorici()
+    teorici = connection.showTeorici()
     teorico_values = [f"{t[2]} {t[1]} {t[0]}" for t in teorici]
     teoricochoosen['values'] = teorico_values
 
@@ -112,7 +115,7 @@ def create_iscrizioni_frame(parent_frame):
     praticochoosen = ttk.Combobox(leftFrame, width=combobox_width, font=("arial", 10))
     praticochoosen.grid(column=1, row=6, padx=5, pady=10, sticky="w")
 
-    pratici = connection.show_Pratici()
+    pratici = connection.showPratici()
     pratico_values = [f"{p[2]} {p[1]} {p[0]}" for p in pratici]
     praticochoosen['values'] = pratico_values
 

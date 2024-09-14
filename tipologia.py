@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-from connetion2 import *
+from connection import *
 from customtkinter import * 
 
 def create_tipologia_frame(parent_frame):

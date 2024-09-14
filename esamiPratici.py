@@ -3,7 +3,7 @@ from tkcalendar import Calendar
 from tkinter import *
 from tkinter import ttk
 from customtkinter import CTkFrame, CTkButton
-from connetion2 import *
+from connection import *
 
 def create_esamipratici_frame(parent_frame):
 

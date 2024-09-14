@@ -7,7 +7,7 @@ def create_login_window(window):
     def login():
         username = usernameEntry.get()
         password = passwordEntry.get()
-        if connection.is_Present(username, password):
+        if connection.isPresent(username, password):
             menu_window = menu.create_menu_window(win)
             menu_window.mainloop()
         else:  

@@ -2,7 +2,7 @@ import datetime
 from tkinter import *
 from tkinter import ttk
 from tkcalendar import Calendar
-from connetion2 import *
+from connection import *
 from customtkinter import *
 
 def create_prenotazione_frame(parent_frame, idStud):

@@ -24,7 +24,7 @@ def create_menu_window(parent_frame):
     window = CTkFrame(parent_frame, fg_color=window_bg_color)
     window.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
-    connection.delete_iscrizioni_scadute()
+    connection.deleteIscrizioniScadute()
 
 
     # Configurazione delle righe e colonne per l'espansione
