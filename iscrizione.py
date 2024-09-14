@@ -16,17 +16,33 @@ def create_iscrizioni_frame(parent_frame):
             else:
                 label.configure(text="Nessuna guida acquistata")
 
+    def updatedView():
+        listbox.delete(0, tk.END)
+        elements = connection.showIscritti()
+        for element in elements:
+            str_element = f"{element[0]} {element[1]} {element[2]} {element[3]}"
+            listbox.insert(tk.END, str_element)
+
     # Funzione per aggiungere l'iscrizione
     def add_iscrizione():
-        CFStudente = studentchoosen.get().split()[2]
-        CFTeorico = teoricochoosen.get().split()[2]
-        CFPratico = praticochoosen.get().split()[2]
-        tipo = tipochoosen.get()
-
         try:
-            connection.add_iscrizione(CFStudente, CFTeorico, CFPratico, date, tipo)
-        except Exception as e:
-            tk.messagebox.showerror("Errore", f"Si è verificato un errore: {str(e)}")
+            CFStudente = studentchoosen.get().split()[2]
+            CFTeorico = teoricochoosen.get().split()[2]
+            CFPratico = praticochoosen.get().split()[2]
+            costoSel = costiChoosen.get()
+            tipo = tipochoosen.get()
+        except:
+            tk.messagebox.showerror("Errore", "Fill all attributes")
+        iva = 22
+
+        if not CFStudente or not CFTeorico or not CFPratico or not date or not tipo or not costoSel or not iva:
+            tk.messagebox.showerror("Errore", "Fill all attributes")
+        else:
+            try:
+                connection.add_iscrizione(CFStudente, CFTeorico, CFPratico, date, tipo, costoSel, iva)
+                updatedView()
+            except Exception as e:
+                tk.messagebox.showerror("Errore", f"Si è verificato un errore: {str(e)}")
 
     # Creazione del frame
     iscrizione_frame = CTkFrame(parent_frame)
@@ -46,7 +62,6 @@ def create_iscrizioni_frame(parent_frame):
     rightFrame = CTkFrame(iscrizione_frame, fg_color=window_bg_color)
     rightFrame.grid(row=1, column=1, padx=20, pady=20, sticky="nsew")
 
-    
     # Etichette e combobox nel frame sinistro
     font_style = ("arial", 15, 'bold')
 
@@ -77,7 +92,11 @@ def create_iscrizioni_frame(parent_frame):
 
     CTkLabel(leftFrame, text="Costo:", font=font_style).grid(column=0, row=4, padx=5, pady=10, sticky="w")
 
-    ttk.Label(leftFrame, text="500", background='white', border=2, relief="sunken", anchor="w", width=18, font=("arial", 10)).grid(column=1, row=4, padx=5, pady=10, sticky="w")
+    costiChoosen = ttk.Combobox(leftFrame, width=combobox_width, font=("arial", 10))
+    costiChoosen.grid(column=1, row=4, padx=5, pady=10, sticky="w")
+
+    costi_values = ["500", "350", "200"]
+    costiChoosen['values'] = costi_values
 
     CTkLabel(leftFrame, text="Istruttore teorico:", font=font_style).grid(column=0, row=5, padx=5, pady=10, sticky="w")
 
@@ -107,10 +126,7 @@ def create_iscrizioni_frame(parent_frame):
     listbox = tk.Listbox(rightFrame, selectmode=tk.SINGLE, font=("arial", 10))
     listbox.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
-    elements = connection.showIscritti()
-    for element in elements:
-        str_element = f"{element[0]} {element[1]} {element[2]} {element[3]}"
-        listbox.insert(tk.END, str_element)
+    updatedView()
 
     listbox.bind("<<ListboxSelect>>", on_select)
 

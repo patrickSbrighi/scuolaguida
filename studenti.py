@@ -1,5 +1,6 @@
+from tkcalendar import Calendar
 from customtkinter import *
-from tkinter import ttk
+from tkinter import Button, Toplevel, ttk
 import tkinter.messagebox as msg
 import connection
 
@@ -12,6 +13,26 @@ def create_student_frame(parent_frame):
         for row in data:
             tree.insert("", "end", values=row)
 
+    def seleziona_data():
+        def conferma_data():
+            data_selezionata = cal.selection_get()
+            giorno_settimana = data_selezionata.weekday()
+            if giorno_settimana in (5, 6):
+                msg.showerror("Errore", "Non puoi selezionare sabato o domenica!")
+                return
+            dateEntry.delete(0, END)
+            dateEntry.insert(0, data_selezionata.strftime("%Y-%m-%d"))
+            cal_finestra.destroy()
+
+        cal_finestra = Toplevel(parent_frame)
+        cal_finestra.grab_set()
+
+        cal = Calendar(cal_finestra, selectmode='day', date_pattern='yyyy-mm-dd')
+        cal.grid(row=0, column=0, pady=20)
+
+        conferma_button = Button(cal_finestra, text="Conferma", command=conferma_data)
+        conferma_button.grid(row=1, column=0, pady=10, sticky="w")
+
     # Funzione per aggiungere uno studente
     def add():
         CF = CFEntry.get()
@@ -21,24 +42,27 @@ def create_student_frame(parent_frame):
         phone = phoneEntry.get()
         date = dateEntry.get()
         
-        try:
-            # Prova ad aggiungere lo studente
-            connection.addStudent(CF, name, surname, address, phone, date)
+        if not CF or not name or not surname or not address or not phone or not date:
+            msg.showerror('Error', "Fill all attributes")
+        else:
+            try:
+                # Prova ad aggiungere lo studente
+                connection.addStudent(CF, name, surname, address, phone, date)
+                
+                # Dopo aver aggiunto, svuota i campi di inserimento
+                CFEntry.delete(0, 'end')
+                nameEntry.delete(0, 'end')
+                surnameEntry.delete(0, 'end')
+                addressEntry.delete(0, 'end')
+                phoneEntry.delete(0, 'end')
+                dateEntry.delete(0, 'end')
             
-            # Dopo aver aggiunto, svuota i campi di inserimento
-            CFEntry.delete(0, 'end')
-            nameEntry.delete(0, 'end')
-            surnameEntry.delete(0, 'end')
-            addressEntry.delete(0, 'end')
-            phoneEntry.delete(0, 'end')
-            dateEntry.delete(0, 'end')
-        
-        except Exception as e:
-            msg.showerror("Errore", f"Si è verificato un errore: {str(e)}")
+            except Exception as e:
+                msg.showerror("Errore", f"Si è verificato un errore: {str(e)}")
 
-        # Aggiorna i dati nel treeview
-        data = connection.showStudent()
-        populate_treeview(tree, data)
+            # Aggiorna i dati nel treeview
+            data = connection.showStudent()
+            populate_treeview(tree, data)
 
     # Creazione del frame per la gestione studenti
     student_frame = CTkFrame(parent_frame)
@@ -88,6 +112,10 @@ def create_student_frame(parent_frame):
     phoneEntry = entries["Recapito Telefonico"]
     dateEntry = entries["Data di Nascita"]
 
+    calButtonGuida = CTkButton(leftFrame, text="Seleziona", command=lambda:seleziona_data())
+    calButtonGuida.grid(row=5, column=2, pady=10, sticky="ew")
+
+
     addbtn = CTkButton(leftFrame, text='Aggiungi', cursor='hand2', command=add)
     addbtn.grid(row=len(labels_entries), column=0, columnspan=2, padx=5, pady=5)
 
@@ -109,7 +137,8 @@ def create_student_frame(parent_frame):
     tree.pack(fill="both", expand=True)
 
     style = ttk.Style()
-    style.configure("Treeview.Heading", font=('Arial', 9, 'bold'))  # Font leggermente aumentato per le intestazioni
+    style.configure("Treeview.Heading", font=('Arial', 12, 'bold'))  # Font leggermente aumentato per le intestazioni
+    style.configure("Treeview",font=('Arial', 12))
 
     # Popola il treeview con i dati iniziali
     data = connection.showStudent()

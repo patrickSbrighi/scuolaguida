@@ -4,7 +4,7 @@ import tkinter.messagebox as msg
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="Monta100!",
+    passwd="",
     database="scuolaguida"
 )
 
@@ -65,46 +65,58 @@ def show_Teorici():
     data = mycursor.fetchall()
     return data
 
-#func in iscrizione
-def add_iscrizione(CFStudente, CFTeorico, CFPratico, data, tipo):
-    mycursor.execute("select idTipologia from tipologiepatenti where nome=%s", (tipo,))
-    idTipologia = mycursor.fetchone()[0]
+def get_tipologia_from_nome(tipo):
+     try: 
+        sql = "SELECT idTipologia FROM tipologiepatenti WHERE nome=%s"
+        mycursor.execute(sql, (tipo,))
+        myresult = mycursor.fetchone()[0]
+        return myresult
+     except:
+        msg.showerror('Error', 'Database is not responding')
 
-    # Inserisci un nuovo record in 'iscrizioni'
-    mycursor.execute(
-        "INSERT INTO scuolaguida.iscrizioni (dataInizio, CFStudente, idTipologia, costo, chiusa, CFIstruttoreTeorico, CFIstruttorePratico) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-        (data, CFStudente, idTipologia, '500', 'N', CFTeorico, CFPratico)
-    )
+def add_acquisto(costo, IDStud):
+    try:
+        sql="INSERT INTO `scuolaguida`.`acquisti` (`costoTotale`, `idStudente`) VALUES (%s, %s);"
+        mycursor.execute(sql, (costo, IDStud))
+        mydb.commit()
+    except:
+        msg.showerror('Error', 'Operation failed')
 
-    # Recupera l'idStudente
-    mycursor.execute("SELECT idStudente FROM scuolaguida.iscrizioni WHERE CFStudente = %s", (CFStudente,))
-    idStudente = mycursor.fetchone()[0]  # Recupera il primo elemento della tupla
-
-    # Inserisci un nuovo record in 'acquisti'
-    mycursor.execute(
-        "INSERT INTO scuolaguida.acquisti (costoTotale, idStudente) VALUES (%s, %s)", 
-        ('500', idStudente)
-    )
-
-    # Recupera l'idAcquisto
-    mycursor.execute("SELECT LAST_INSERT_ID()")
-    idAcquisto = mycursor.fetchone()[0]  # Recupera l'id dell'ultimo inserimento
-
-    # Inserisci un nuovo record in 'fatture'
-    mycursor.execute(
-        "INSERT INTO scuolaguida.fatture (importoLordo, IVA, importoNetto, idAcquisto) VALUES (%s, %s, %s, %s)",
-        ('610', '22', '500', idAcquisto)
-    )
-
-    # Applica le modifiche
-    mydb.commit()
+def add_fattura(lordo, iva, netto, IDAcquisto):
+    try:
+        sql="INSERT INTO scuolaguida.fatture (importoLordo, IVA, importoNetto, idAcquisto) VALUES (%s, %s, %s, %s)"
+        mycursor.execute(sql, (lordo, iva, netto, IDAcquisto))
+        mydb.commit()
+    except:
+        msg.showerror('Error', 'Operation failed')
 
 #func in iscrizione
+def add_iscrizione(CFStudente, CFTeorico, CFPratico, data, tipo, costo, iva):
+    try:
+        costo = int(costo)
+        idTipologia = get_tipologia_from_nome(tipo)
+
+        mycursor.execute(
+            "INSERT INTO scuolaguida.iscrizioni (dataInizio, CFStudente, idTipologia, costo, chiusa, CFIstruttoreTeorico, CFIstruttorePratico) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (data, CFStudente, idTipologia, costo, 0, CFTeorico, CFPratico)
+        )
+        
+        mycursor.execute("SELECT LAST_INSERT_ID()")
+        idStudente = mycursor.fetchone()[0] 
+        add_acquisto(costo, idStudente)
+        
+        mycursor.execute("SELECT LAST_INSERT_ID()")
+        idAcquisto = mycursor.fetchone()[0] 
+        netto = costo - ((costo*iva)/100)
+        add_fattura(costo, iva, netto, idAcquisto)
+
+        mydb.commit()
+    except Exception as ex:
+        msg.showerror('Error', ex)
+
+#func in iscrizione 
 def showIscritti():
-    sql = "select i.CFStudente, s.nome, s.cognome, t.nome \
-        from scuolaguida.iscrizioni i join scuolaguida.studenti s on (i.CFStudente = s.CFStudente) join scuolaguida.tipologiepatenti t\
-        on (i.idTipologia = t.idTipologia)\
-        where i.chiusa = 'N';"
+    sql = "select i.CFStudente, s.nome, s.cognome, t.nome from scuolaguida.iscrizioni i join scuolaguida.studenti s on (i.CFStudente = s.CFStudente) join scuolaguida.tipologiepatenti t on (i.idTipologia = t.idTipologia)where i.chiusa = '0';"
     mycursor.execute(sql)
     data = mycursor.fetchall()
     return list(data)
@@ -131,34 +143,25 @@ def showGuideMancanti(CFStudente):
     return data[0]
 
 def showIscrittiTeorico():
-    sql = "select i.CFStudente, s.nome, s.cognome, t.nome \
-    from scuolaguida.iscrizioni i join scuolaguida.studenti s on (i.CFStudente = s.CFStudente) \
-    join scuolaguida.tipologiepatenti t\
-    on (i.idTipologia = t.idTipologia)\
-    where i.chiusa = 'N' and (i.idStudente not in (select idStudente\
-    from scuolaguida.esamiteorici) or \
-    i.idStudente in \
-    (select idStudente\
-    from scuolaguida.esamiteorici\
-    where esito='F' and idStudente not in (\
-    select idStudente\
-    from scuolaguida.esamiteorici\
-    where esito='P' ))) ;"
+    sql = "SELECT I.idStudente, S.nome, S.cognome, T.nome FROM scuolaguida.iscrizioni I JOIN scuolaguida.studenti S ON (I.CFStudente = S.CFStudente) JOIN scuolaguida.tipologiepatenti T ON (T.idTipologia = I.idTipologia) WHERE S.dataNascita < DATE_SUB(DATE_SUB(DATE_SUB(CURDATE(), INTERVAL T.eta YEAR), INTERVAL 1 MONTH), INTERVAL 1 DAY) AND I.chiusa = 0 AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = 1 OR E.esito IS NULL OR E.esito = '') ORDER BY I.dataInizio"
     mycursor.execute(sql)
     data = mycursor.fetchall()
     return list(data)
 
 def addAcquisto(CFStudente, importo):
-    mycursor.execute("select idStudente from scuolaguida.iscrizioni where CFStudente = %s",(CFStudente,) )
-    idStudente = mycursor.fetchone()[0]
+    try:
+        mycursor.execute("select idStudente from scuolaguida.iscrizioni where CFStudente = %s",(CFStudente,) )
+        idStudente = mycursor.fetchone()[0]
 
-    mycursor.execute("insert into scuolaguida.acquisti (costoTotale, idStudente) values (%s, %s)", (importo, idStudente))
-    mycursor.execute("SELECT LAST_INSERT_ID()")
-    idAcquisto = mycursor.fetchone()[0]
-    importoNetto = importo - (importo*22)/100
+        mycursor.execute("insert into scuolaguida.acquisti (costoTotale, idStudente) values (%s, %s)", (importo, idStudente))
+        mycursor.execute("SELECT LAST_INSERT_ID()")
+        idAcquisto = mycursor.fetchone()[0]
+        importoNetto = importo - (importo*22)/100
 
-    mycursor.execute("insert into scuolaguida.fatture (importoLordo, IVA, importoNetto, idAcquisto) values (%s, %s, %s, %s)", (importo, '22', importoNetto, idAcquisto))
-    mydb.commit()
+        mycursor.execute("insert into scuolaguida.fatture (importoLordo, IVA, importoNetto, idAcquisto) values (%s, %s, %s, %s)", (importo, '22', importoNetto, idAcquisto))
+        mydb.commit()
+    except Exception as ex:
+        msg.showerror('Error', ex)
 
 def addAcquistoTeorico(CFStudente, importo):
     try:

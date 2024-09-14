@@ -12,7 +12,11 @@ def create_statistiche_frame(parent_frame):
     def updateEsaminatori():
         clearEsaminatori()
         for ex in get_perc_esaminatori():
-            treeEsamnatori.insert('',END,values=ex)
+            if ex[2] is None:
+                ex = list(ex)
+                ex[2] = 0
+            treeEsamnatori.insert('', END, values=ex)
+
 
     def clearIstruttoriPratici():
         for item in treeIstruttoriPratici.get_children():

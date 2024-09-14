@@ -5,7 +5,7 @@ try:
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",
-        passwd="Monta100!",
+        passwd="",
         database="scuolaguida"
     )
     mycursor = mydb.cursor()
@@ -74,7 +74,7 @@ def add_admin(username, password):
 
 def get_perc_esaminatori():
      try: 
-        sql = "SELECT nome, cognome, CAST(bocciati*100/totale AS DECIMAL(10,0)) AS percentuale FROM (SELECT E.CFEsaminatore, E.nome, E.cognome, bocciati, COUNT(I.idStudente) totale FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici EP ON I.idStudente = EP.idStudente JOIN scuolaguida.esaminatori E ON E.CFEsaminatore = EP.CFEsaminatore JOIN (SELECT E.CFEsaminatore, COUNT(I.idStudente) bocciati FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici EP ON I.idStudente = EP.idStudente JOIN scuolaguida.esaminatori E ON E.CFEsaminatore = EP.CFEsaminatore WHERE EP.esito = 0 GROUP BY E.CFEsaminatore) Q ON E.CFEsaminatore = Q.CFEsaminatore GROUP BY E.CFEsaminatore, E.nome, E.cognome) perc"
+        sql = "SELECT nome, cognome, CAST(bocciati*100/totale AS DECIMAL(10,0)) AS percentuale FROM (SELECT E.CFEsaminatore, E.nome, E.cognome, bocciati, COUNT(I.idStudente) totale FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici EP ON I.idStudente = EP.idStudente JOIN scuolaguida.esaminatori E ON E.CFEsaminatore = EP.CFEsaminatore LEFT JOIN (SELECT E.CFEsaminatore, COUNT(I.idStudente) bocciati FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici EP ON I.idStudente = EP.idStudente JOIN scuolaguida.esaminatori E ON E.CFEsaminatore = EP.CFEsaminatore WHERE EP.esito = 0 GROUP BY E.CFEsaminatore) Q ON E.CFEsaminatore = Q.CFEsaminatore GROUP BY E.CFEsaminatore, E.nome, E.cognome) perc"
         mycursor.execute(sql)
         myresult = mycursor.fetchall()
         return myresult
@@ -151,7 +151,7 @@ def add_esame_teorico(ID, errori, data):
 
 def get_studenti_pratici():
      try: 
-        sql = "SELECT sub.idStudente, S.nome, S.cognome FROM (SELECT I.idStudente, I.CFStudente, COUNT(G.idGuida) guide FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) JOIN scuolaguida.acquisti A ON (A.idStudente = I.idStudente) JOIN scuolaguida.pacchetti P ON (A.idAcquisto = P.idAcquisto) JOIN scuolaguida.guide G ON (G.IdPacchetto = P.IdPacchetto) WHERE I.chiusa = '0' AND I.idStudente IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = '1') AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici E ON (I.idStudente = E.idStudente) WHERE E.esito = '1') GROUP BY I.idStudente HAVING guide >= 12 ORDER BY I.dataInizio) sub JOIN scuolaguida.studenti S ON sub.CFStudente = S.CFStudente JOIN scuolaguida.acquisti A ON sub.idStudente = A.idStudente JOIN scuolaguida.esamipratici ES ON A.idAcquisto = ES.idAcquisto WHERE ES.esito IS NULL OR ES.esito = ''"
+        sql = "SELECT DISTINCT sub.idStudente, S.nome, S.cognome FROM (SELECT I.idStudente, I.CFStudente, COUNT(G.idGuida) guide FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) JOIN scuolaguida.acquisti A ON (A.idStudente = I.idStudente) JOIN scuolaguida.pacchetti P ON (A.idAcquisto = P.idAcquisto) JOIN scuolaguida.guide G ON (G.IdPacchetto = P.IdPacchetto) WHERE I.chiusa = '0' AND I.idStudente IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamiteorici E ON (I.idStudente = E.idStudente) WHERE E.esito = '1') AND I.idStudente NOT IN (SELECT I.idStudente FROM scuolaguida.iscrizioni I JOIN scuolaguida.esamipratici E ON (I.idStudente = E.idStudente) WHERE E.esito = '1') GROUP BY I.idStudente HAVING guide >= 12 ORDER BY I.dataInizio) sub JOIN scuolaguida.studenti S ON sub.CFStudente = S.CFStudente JOIN scuolaguida.acquisti A ON sub.idStudente = A.idStudente JOIN scuolaguida.esamipratici ES ON A.idAcquisto = ES.idAcquisto WHERE ES.esito IS NULL OR ES.esito = ''"
         mycursor.execute(sql)
         myresult = mycursor.fetchall()
         return myresult
