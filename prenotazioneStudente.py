@@ -16,7 +16,7 @@ def create_prenotazione_frame(parent_frame, idStud):
 
     def updateView():
         clearTreeview()
-        for gu in get_guide_future():
+        for gu in get_guide_future(idStudente):
             list.insert('',END,values=gu)
 
     

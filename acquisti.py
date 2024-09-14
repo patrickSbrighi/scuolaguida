@@ -5,6 +5,20 @@ import connection
 from tkinter import messagebox
 
 def create_acquisti_frame(parent_frame):
+    def addPacchetto(item, pacco):
+        connection.addAcquistoPacchetti(item, pacco)
+        viewPacchetti()
+
+    def addTeorico(item):
+        costo = 100
+        connection.addAcquistoTeorico(item, costo)
+        viewStudentTeorico()
+
+    def addPratico(item):
+        costo = 200
+        connection.addAcquistoPratico(item, costo)
+        viewStudentPratico()
+
     def clear_frames():
         # Nasconde tutti i widget quando non necessari
         listbox.grid_forget()
@@ -25,7 +39,7 @@ def create_acquisti_frame(parent_frame):
                 selected_item = listbox.get(selected_index)
                 selected_label.configure(text=f"Desidera acquistare un esame per lo studente: {selected_item.split()[1]} {selected_item.split()[2]}")
                 selected_label.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
-                btnAcquista.configure(command=lambda: connection.addAcquistoTeorico(selected_item.split()[0], 100))
+                btnAcquista.configure(command=lambda: addTeorico(selected_item.split()[0]))
                 btnAcquista.grid(row=2, column=0, padx=10, pady=10, columnspan=2)
                 pacchetti_label.grid_forget()
                 pacchettichoosen.grid_forget()
@@ -48,7 +62,7 @@ def create_acquisti_frame(parent_frame):
                 selected_item = listbox.get(selected_index)
                 selected_label.configure(text=f"Desidera acquistare un esame per lo studente: {selected_item.split()[1]} {selected_item.split()[2]}")
                 selected_label.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
-                btnAcquista.configure(command=lambda: connection.addAcquistoPratico(selected_item.split()[0], 100))
+                btnAcquista.configure(command=lambda: addPratico(selected_item.split()[0]))
                 btnAcquista.grid(row=2, column=0, padx=10, pady=10, columnspan=2)
                 pacchetti_label.grid_forget()
                 pacchettichoosen.grid_forget()
@@ -98,7 +112,7 @@ def create_acquisti_frame(parent_frame):
                     return
                 
                 selected_label.configure(text=f"Desidera acquistare un pacchetto per lo studente: {selected_item[0].split()[1]} {selected_item[0].split()[2]}")
-                btnAcquista.configure(command=lambda: connection.addAcquistoPacchetti(selected_item[0].split()[0], selected_pacchetto.split()[1]))
+                btnAcquista.configure(command=lambda: addPacchetto(selected_item[0].split()[0], selected_pacchetto.split()[1]))
                 btnAcquista.grid(row=2, column=0, padx=10, pady=10, columnspan=2)
             else:
                 messagebox.showerror("Errore", "Selezionare prima un elemento dalla listbox.")
@@ -111,7 +125,7 @@ def create_acquisti_frame(parent_frame):
         elements = connection.showIscrittiPacchetti()
         listbox.delete(0, END)
         for element in elements:
-            str_elem = f"{element[0]} {element[1]} {element[2]} guide mancanti {element[3]}"
+            str_elem = f"{element[0]} {element[1]} {element[2]}"
             listbox.insert(END, str_elem)
 
 

@@ -184,10 +184,10 @@ def get_studenti_per_guide():
      except:
         msg.showerror('Error', 'Database is not responding')
 
-def get_guide_future():
+def get_guide_future(id):
     try: 
-        sql = "SELECT idGuida, data, ora, targa, CFIstruttorePratico FROM scuolaguida.guide WHERE data >= CURDATE()"
-        mycursor.execute(sql)
+        sql = "SELECT idGuida, data, ora, targa, CFIstruttorePratico FROM scuolaguida.guide G JOIN scuolaguida.pacchetti P ON  P.idPacchetto = G.idPacchetto JOIN scuolaguida.acquisti A ON A.idAcquisto = P.idAcquisto WHERE G.data >= CURDATE() AND A.idStudente = %s"
+        mycursor.execute(sql, (id,))
         myresult = mycursor.fetchall()
         return myresult
     except:
