@@ -155,7 +155,7 @@ def showIscritti():
 #func in iscrizione
 def showGuideMancanti(CFStudente):
     try:
-        mycursor.execute("select idStudente from iscrizioni where CFStudente = %s", (CFStudente,))
+        mycursor.execute("select idStudente from iscrizioni where CFStudente = %s ORDER BY idStudente DESC LIMIT 1", (CFStudente,))
         idStudente = mycursor.fetchone()[0]
         
 
