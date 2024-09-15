@@ -31,9 +31,9 @@ CREATE TABLE Admins (
 
 CREATE TABLE EsamiPratici (
      idEsame INT NOT NULL AUTO_INCREMENT,
-     data DATE NOT NULL,
+     data DATE NULL,
      costo FLOAT NOT NULL,
-     esito CHAR(1) NOT NULL,
+     esito CHAR(1) NULL,
      idStudente INT NOT NULL,
      CFEsaminatore VARCHAR(20) NOT NULL,
      idAcquisto INT NOT NULL,
@@ -42,10 +42,10 @@ CREATE TABLE EsamiPratici (
 
 CREATE TABLE EsamiTeorici (
      idEsame INT NOT NULL AUTO_INCREMENT,
-     data DATE NOT NULL,
+     data DATE NULL,
      costo FLOAT NOT NULL,
-     esito CHAR(1) NOT NULL,
-     numErrori INT NOT NULL,
+     esito CHAR(1) NULL,
+     numErrori INT NULL,
      idStudente INT NOT NULL,
      idAcquisto INT NOT NULL,
      CONSTRAINT PK_EsamiTeorici PRIMARY KEY (idEsame)
