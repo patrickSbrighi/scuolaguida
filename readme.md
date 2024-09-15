@@ -1,8 +1,17 @@
-**Istruzioni oer l'esecuzione:**
+# Istruzioni oer l'esecuzione:
 - lanciare XAMPP e aprire una connessione con MySQL
 - Installare lo schema **savingsapp** su MySQL Workbench (credenziali: user='root', password vuota)
 - Per la corretta esecuzione dell'applicazione è necessario installare le librerie Tkinter, CustomTkinter e tkcalendar
-- 
+- Avviare l'applicazione tramite il comando 
+
+```bash
+#Su Windows
+python .\startproject.py
+
+#Su Linux e macOS
+python ./startproject.py
+
+```
 
 # Script per l'installazione delle librerie necessarie con pip
 
