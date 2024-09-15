@@ -20,7 +20,6 @@ def create_acquisti_frame(parent_frame):
         viewStudentPratico()
 
     def clear_frames():
-        # Nasconde tutti i widget quando non necessari
         listbox.grid_forget()
         selected_label.grid_forget()
         pacchetti_label.grid_forget()
@@ -82,13 +81,11 @@ def create_acquisti_frame(parent_frame):
         pacchetti = ['Pacchetto 1 guida', 'Pacchetto 5 guide', 'Pacchetto 10 guide', 'Pacchetto 15 guide']
         pacchettichoosen['values'] = pacchetti
         
-        # Nascondi gli elementi che non sono immediatamente necessari
         selected_label.grid_forget()
         btnAcquista.grid_forget()
         pacchetti_label.grid_forget()
         pacchettichoosen.grid_forget()
 
-        # Variabile per tenere traccia della selezione dell'elemento
         selected_item = [None]
 
         def on_listbox_select(event):
@@ -101,7 +98,6 @@ def create_acquisti_frame(parent_frame):
                 pacchetti_label.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
                 pacchettichoosen.grid(row=1, column=1)
                 
-                # Assicurati che il pulsante Acquista sia nascosto fino a quando non è selezionato un pacchetto
                 btnAcquista.grid_forget()
 
         def on_pacchetto_select(event):
@@ -117,11 +113,9 @@ def create_acquisti_frame(parent_frame):
             else:
                 messagebox.showerror("Errore", "Selezionare prima un elemento dalla listbox.")
 
-        # Configura gli eventi di selezione
         listbox.bind("<<ListboxSelect>>", on_listbox_select)
         pacchettichoosen.bind("<<ComboboxSelected>>", on_pacchetto_select)
 
-        # Carica gli elementi nella Listbox
         elements = connection.showIscrittiPacchetti()
         listbox.delete(0, END)
         for element in elements:
@@ -130,12 +124,9 @@ def create_acquisti_frame(parent_frame):
 
 
 
-
-    # Crea il frame principale per le acquisizioni
     acquisti_frame = CTkFrame(parent_frame, corner_radius=15, fg_color=parent_frame.cget("fg_color"))
     acquisti_frame.grid(row=0, column=0, sticky="nsew")
 
-    # Configura l'espansione del frame principale
     parent_frame.grid_rowconfigure(0, weight=1)
     parent_frame.grid_columnconfigure(0, weight=1)
     acquisti_frame.grid_rowconfigure(1, weight=1)
@@ -143,7 +134,6 @@ def create_acquisti_frame(parent_frame):
 
     window_bg_color = acquisti_frame.cget("fg_color")
 
-    # Frame per la parte superiore (bottone e label)
     topframe = CTkFrame(acquisti_frame, fg_color=window_bg_color)
     topframe.grid(row=0, column=0, sticky="ew", padx=20, pady=20)
     topframe.grid_columnconfigure(0, weight=1)
@@ -151,8 +141,6 @@ def create_acquisti_frame(parent_frame):
     topframe.grid_columnconfigure(2, weight=1)
     topframe.grid_columnconfigure(3, weight=1)
 
-
-    # Frame centrale
     center_frame = CTkFrame(acquisti_frame, fg_color=window_bg_color)
     center_frame.grid(row=1, column=0, sticky="ew")
     center_frame.grid_rowconfigure(0, weight=1)
@@ -174,7 +162,6 @@ def create_acquisti_frame(parent_frame):
     btnpacchetti = CTkButton(topframe, text='Pacchetto guide', command=viewPacchetti)
     btnpacchetti.grid(row=0, column=3, padx=10, pady=10)
 
-    # Creazione della Listbox e degli altri widget persistenti
     listbox = Listbox(center_frame, selectmode=SINGLE, width=100, height=20)
 
     selected_label = CTkLabel(center_frame, text="")

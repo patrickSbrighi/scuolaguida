@@ -5,7 +5,6 @@ import tkinter.messagebox as msg
 import connection
 
 def create_student_frame(parent_frame):
-    # Funzione per popolare il treeview con i dati
     def populate_treeview(tree, data):
         for student in tree.get_children():
             tree.delete(student)
@@ -33,7 +32,7 @@ def create_student_frame(parent_frame):
         conferma_button = Button(cal_finestra, text="Conferma", command=conferma_data)
         conferma_button.grid(row=1, column=0, pady=10, sticky="w")
 
-    # Funzione per aggiungere uno studente
+
     def add():
         CF = CFEntry.get()
         name = nameEntry.get()
@@ -46,10 +45,10 @@ def create_student_frame(parent_frame):
             msg.showerror('Error', "Fill all attributes")
         else:
             try:
-                # Prova ad aggiungere lo studente
+
                 connection.addStudent(CF, name, surname, address, phone, date)
                 
-                # Dopo aver aggiunto, svuota i campi di inserimento
+
                 CFEntry.delete(0, 'end')
                 nameEntry.delete(0, 'end')
                 surnameEntry.delete(0, 'end')
@@ -60,34 +59,32 @@ def create_student_frame(parent_frame):
             except Exception as e:
                 msg.showerror("Errore", f"Si è verificato un errore: {str(e)}")
 
-            # Aggiorna i dati nel treeview
             data = connection.showStudent()
             populate_treeview(tree, data)
 
-    # Creazione del frame per la gestione studenti
     student_frame = CTkFrame(parent_frame)
     student_frame.grid(row=0, column=0, sticky="nsew")
 
-    # Configura il frame per espandersi con il genitore
+
     parent_frame.grid_rowconfigure(0, weight=1)
     parent_frame.grid_columnconfigure(0, weight=1)
 
     window_bg_color = student_frame.cget("fg_color")
 
 
-    # Layout del frame studente
+
     leftFrame = CTkFrame(student_frame, fg_color=window_bg_color)
     leftFrame.grid(row=0, column=0, sticky="ns", padx=5, pady=5)
 
-    rightData = CTkFrame(student_frame, fg_color=window_bg_color)  # Riduzione della larghezza del frame destro
+    rightData = CTkFrame(student_frame, fg_color=window_bg_color) 
     rightData.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
 
-    # Configura i frame interni per espandersi
-    student_frame.grid_rowconfigure(0, weight=1)
-    student_frame.grid_columnconfigure(0, weight=0)  # Il frame di sinistra ha una dimensione fissa
-    student_frame.grid_columnconfigure(1, weight=1)  # Il frame di destra si espande
 
-    # Etichette e campi di input
+    student_frame.grid_rowconfigure(0, weight=1)
+    student_frame.grid_columnconfigure(0, weight=0)  
+    student_frame.grid_columnconfigure(1, weight=1)  
+
+
     labels_entries = {
         "CF": (0, 0),
         "Name": (1, 0),
@@ -119,10 +116,10 @@ def create_student_frame(parent_frame):
     addbtn = CTkButton(leftFrame, text='Aggiungi', cursor='hand2', command=add)
     addbtn.grid(row=len(labels_entries), column=0, columnspan=2, padx=5, pady=5)
 
-    # Treeview per visualizzare gli studenti
+
     tree = ttk.Treeview(rightData, columns=('CF', 'Nome', 'Cognome', 'Indirizzo', 'Recapito Telefonico', 'Data di Nascita'), show='headings', height=8)
 
-    # Definizione delle intestazioni delle colonne con larghezza ridotta
+
     tree.heading('CF', text='CF', anchor='center')
     tree.heading('Nome', text='Nome', anchor='center')
     tree.heading('Cognome', text='Cognome', anchor='center')
@@ -133,18 +130,17 @@ def create_student_frame(parent_frame):
     for col in tree["columns"]:
         tree.column(col, width=50, anchor="w") 
 
-    # Configurazione per riempire lo spazio disponibile
+
     tree.pack(fill="both", expand=True)
 
     style = ttk.Style()
-    style.configure("Treeview.Heading", font=('Arial', 12, 'bold'))  # Font leggermente aumentato per le intestazioni
+    style.configure("Treeview.Heading", font=('Arial', 12, 'bold'))  
     style.configure("Treeview",font=('Arial', 12))
 
-    # Popola il treeview con i dati iniziali
+
     data = connection.showStudent()
     populate_treeview(tree, data)
 
-    # Configurazione per l'espansione automatica
     rightData.grid_rowconfigure(0, weight=1)
     rightData.grid_columnconfigure(0, weight=1)
 

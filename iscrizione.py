@@ -8,7 +8,7 @@ def create_iscrizioni_frame(parent_frame):
     def studSceglibili():
         string = [f"{student[2]} {student[1]} {student[0]}" for student in connection.showNonIscritti()]
         studentchoosen['values'] = string
-    # Funzione per gestire la selezione della listbox
+
     def on_select(event):
         selected_index = listbox.curselection()
         if selected_index:
@@ -24,7 +24,6 @@ def create_iscrizioni_frame(parent_frame):
             str_element = f"{element[0]} {element[1]} {element[2]} {element[3]}"
             listbox.insert(tk.END, str_element)
 
-    # Funzione per aggiungere l'iscrizione
     def add_iscrizione():
         iva = 22
         try:
@@ -51,29 +50,28 @@ def create_iscrizioni_frame(parent_frame):
             except Exception as e:
                 tk.messagebox.showerror("Errore", f"Si è verificato un errore: {str(e)}")
 
-    # Creazione del frame
+
     iscrizione_frame = CTkFrame(parent_frame)
     iscrizione_frame.grid(row=0, column=0, sticky="nsew")
 
-    # Configura il frame per espandersi con il genitore
+
     parent_frame.grid_rowconfigure(0, weight=1)
     parent_frame.grid_columnconfigure(0, weight=1)
 
-    # Colore di sfondo
+
     window_bg_color = iscrizione_frame.cget("fg_color")
 
-    # Frame per la disposizione dei widget
     leftFrame = CTkFrame(iscrizione_frame, fg_color=window_bg_color)
     leftFrame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
 
     rightFrame = CTkFrame(iscrizione_frame, fg_color=window_bg_color)
     rightFrame.grid(row=1, column=1, padx=20, pady=20, sticky="nsew")
 
-    # Etichette e combobox nel frame sinistro
+
     font_style = ("arial", 15, 'bold')
 
-    # Larghezza dei combobox uguale alle etichette
-    combobox_width = 15  # Imposta la larghezza per combobox
+
+    combobox_width = 15
 
     CTkLabel(leftFrame, text="CF Studente:", font=font_style).grid(column=0, row=1, padx=5, pady=10, sticky="w")
 
@@ -126,7 +124,7 @@ def create_iscrizioni_frame(parent_frame):
     addbtn.grid(row=7, column=0, columnspan=2, padx=5, pady=5)
 
 
-    # Listbox e label nel frame destro
+
     CTkLabel(rightFrame, text='Seleziona un iscritto', font=('arial', 15)).grid(row=0, column=0, padx=10, pady=10, sticky="ew")
 
     listbox = tk.Listbox(rightFrame, selectmode=tk.SINGLE, font=("arial", 10))
@@ -139,23 +137,23 @@ def create_iscrizioni_frame(parent_frame):
     label = CTkLabel(rightFrame, text='', font=("arial", 15))
     label.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
 
-    # Configurazione del grid layout per i frame
+
     leftFrame.columnconfigure(0, weight=1)
-    leftFrame.columnconfigure(1, weight=2)  # Maggiore peso per la seconda colonna per l'espansione
+    leftFrame.columnconfigure(1, weight=2) 
     leftFrame.rowconfigure(7, weight=1)
 
     rightFrame.columnconfigure(0, weight=1)
-    rightFrame.rowconfigure(0, weight=1)  # Righe e colonne devono essere configurate per l'espansione
+    rightFrame.rowconfigure(0, weight=1)  
     rightFrame.rowconfigure(1, weight=2)
     rightFrame.rowconfigure(2, weight=1)
 
-    # Configurazione per espandere listbox
-    rightFrame.columnconfigure(0, weight=1)
-    rightFrame.rowconfigure(1, weight=1)  # La Listbox occupa tutto lo spazio rimanente
 
-    # Configura le proporzioni di spazio tra leftFrame e rightFrame
-    iscrizione_frame.columnconfigure(0, weight=1)  # Peso più basso per leftFrame
-    iscrizione_frame.columnconfigure(1, weight=2)  # Peso maggiore per rightFrame
+    rightFrame.columnconfigure(0, weight=1)
+    rightFrame.rowconfigure(1, weight=1) 
+
+  
+    iscrizione_frame.columnconfigure(0, weight=1)  
+    iscrizione_frame.columnconfigure(1, weight=2)  
 
 
     return iscrizione_frame
