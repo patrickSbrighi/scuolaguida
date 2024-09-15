@@ -219,3 +219,5 @@ ALTER TABLE Lezioni ADD CONSTRAINT FK_Spiegazione
 ALTER TABLE Pacchetti ADD CONSTRAINT FK_Comprende
      FOREIGN KEY (idAcquisto)
      REFERENCES Acquisti (idAcquisto);
+
+INSERT INTO `scuolaguida`.`admins` (`username`, `password`) VALUES ('admin', 'admin');
